@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2005
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSiren", "FSiren\FSiren.fsproj", "{4F32D2D1-AC7F-40FB-B449-9F010FCA5095}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4F32D2D1-AC7F-40FB-B449-9F010FCA5095}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F32D2D1-AC7F-40FB-B449-9F010FCA5095}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F32D2D1-AC7F-40FB-B449-9F010FCA5095}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F32D2D1-AC7F-40FB-B449-9F010FCA5095}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6C4001A3-C1B3-444C-9B46-DA60BDD33429}
+	EndGlobalSection
+EndGlobal
