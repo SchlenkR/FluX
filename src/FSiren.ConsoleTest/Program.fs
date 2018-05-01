@@ -9,11 +9,10 @@ type GlobalState = {data:string}
 let main argv =
 
     let comp = circuit {
-        let! x = counter 11 1
-        //let! y = counter 11 0
-        //let! z = counter 21 0
-        //return sprintf "x=%A y=%A z=%A" x y z
-        return sprintf "x=%A " x
+        let! x = counter 1 1
+        let! y = counter 11 2
+        let! z = counter 21 3
+        return sprintf "x=%A y=%A z=%A" x y z
     }
 
     let constantGlobalState = {data = "Some global state"}
@@ -34,5 +33,7 @@ let main argv =
     printfn "v2: %A" v2
     printfn "v3: %A" v3
     printfn "v4: %A" v4
+
+    Console.ReadLine() |> ignore
 
     0
