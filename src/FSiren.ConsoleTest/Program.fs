@@ -18,11 +18,11 @@ let main argv =
 
     let constantGlobalState = {data = "Some global state"}
 
-    // Alternative 1
-    let v1,s1 = (run comp) None constantGlobalState
-    let v2,s2 = (run comp) (Some s1) constantGlobalState
-    let v3,s3 = (run comp) (Some s2) constantGlobalState
-    let v4,s4 = (run comp) (Some s3) constantGlobalState
+    //// Alternative 1
+    //let v1,s1 = (run comp) None constantGlobalState
+    //let v2,s2 = (run comp) (Some s1) constantGlobalState
+    //let v3,s3 = (run comp) (Some s2) constantGlobalState
+    //let v4,s4 = (run comp) (Some s3) constantGlobalState
 
     // Convenient
     let v1,cont1 = (start comp) constantGlobalState
