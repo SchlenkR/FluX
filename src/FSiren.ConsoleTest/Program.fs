@@ -9,15 +9,26 @@ type GlobalState = {data:string}
 let main argv =
 
     let comp = circuit {
-        let! x = counter 1 1
-        let! y = counter 11 1
-        return sprintf "x=%A y=%A" x y
+        let! x = counter 11 1
+        //let! y = counter 11 0
+        //let! z = counter 21 0
+        //return sprintf "x=%A y=%A z=%A" x y z
+        return sprintf "x=%A " x
     }
 
-    let v1,s1,g1 = (run comp) None {data = "Some global state"}
-    let v2,s2,g2 = (run comp) (Some s1) g1
-    let v3,s3,g3 = (run comp) (Some s2) g2
-    let v4,s4,g4 = (run comp) (Some s3) g3
+    let constantGlobalState = {data = "Some global state"}
+
+    // Alternative 1
+    let v1,s1 = (run comp) None constantGlobalState
+    let v2,s2 = (run comp) (Some s1) constantGlobalState
+    let v3,s3 = (run comp) (Some s2) constantGlobalState
+    let v4,s4 = (run comp) (Some s3) constantGlobalState
+
+    // Convenient
+    let v1,cont1 = (start comp) constantGlobalState
+    let v2,cont2 = cont1.Eval constantGlobalState
+    let v3,cont3 = cont2.Eval constantGlobalState
+    let v4,cont4 = cont3.Eval constantGlobalState
 
     printfn "v1: %A" v1
     printfn "v2: %A" v2
