@@ -1,12 +1,12 @@
-module FSiren
+module FSiren.Core
 
-type M<'a, 'TState> = 
-    | M of ((Option<'a> * 'TState) -> ('a * 'TState))
+type M<'a, 'g> = 
+    | M of ((Option<'a> * 'g) -> ('a * 'g))
     member x.Run = match x with M b -> b
 
 // Builder
 type CircuitBuilder() =
-    member this.Bind(m:M<'a, 'TState>, f:('a -> M<'b, 'TState>)) : M<('a * 'b), 'TState> =
+    member this.Bind(m:M<'a, 'g>, f:('a -> M<'b, 'g>)) : M<('a * 'b), 'g> =
         M(fun wholeState ->
             let aOpt, globalState = wholeState
             let a', b' =
@@ -22,11 +22,12 @@ type CircuitBuilder() =
     member this.Return x = M(fun (_, globalState) -> (x, globalState))
 let circuit = CircuitBuilder()
 
+
 // helper
-let t_1 seed acc =
+let t1 seed acc =
     M(function
         | None, globalState -> seed, globalState
         | Some localStateState, globalState -> acc localStateState, globalState)
 
 // domain instances
-let counter seed inc = t_1 seed (fun prev -> prev + inc)
+let counter seed inc = t1 seed (fun prev -> prev + inc)
