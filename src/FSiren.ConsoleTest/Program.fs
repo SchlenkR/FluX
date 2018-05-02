@@ -2,6 +2,7 @@
 
 open System
 open FSiren
+open FSiren.NAudio
 
 type GlobalState = {data:string}
 
@@ -9,9 +10,9 @@ type GlobalState = {data:string}
 let main argv =
 
     let comp = circuit {
-        let! x = counter 1 1
-        let! y = counter 11 2
-        let! z = counter 21 3
+        let! x = counter 1.0 1.0
+        let! y = counter 11.0 2.0
+        let! z = counter 21.0 3.0
         return sprintf "x=%A y=%A z=%A" x y z
     }
 

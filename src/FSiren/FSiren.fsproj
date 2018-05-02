@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <Compile Include="Core.fs" />
-    <Compile Include="BuildingBlocks.fs" />
+    <Compile Include="Audio.fs" />
   </ItemGroup>
 
   <ItemGroup>
