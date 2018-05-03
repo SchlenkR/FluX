@@ -38,7 +38,7 @@ module Core =
     // Lifting:
     // v : value as state
     // r : no reader state
-    // TODO s : no internal state
+    // s : no internal state
 
     let lift_v (f:('a * 'b) -> 'r -> ('a * 'b)) =
         fun prev readerState ->
@@ -52,10 +52,13 @@ module Core =
         fun prev readerState ->
             let fVal = f prev
             (fVal,fVal)
-    // TODO: lift_s...
+    let lift_s (f:'r -> 'v) =
+        fun prev readerState ->
+            let fVal = f readerState
+            (fVal,())
 
-    // Block builder for functions with t - 1 value.
-    let t1 statefulFunc seed  =
+    // Gen builder for handling seed values.
+    let build statefulFunc seed  =
         let genFunc prev readerState =
             let x = match prev with
                     | Some previousState -> previousState

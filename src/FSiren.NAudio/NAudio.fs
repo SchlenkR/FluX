@@ -6,14 +6,14 @@ module Playback =
     open System.Threading
 
     type SampleProvider<'a> (gen:Gen<float,'a,Env>) =
-        let mutable samplePos = 0;
-        let env = { Env.samplePos = samplePos; Env.sampleRate = 44100<Hz> }
+        let mutable samplePos = 0.0;
+        let env = { Env.samplePos = samplePos; Env.sampleRate = 44100.0 }
         let mutable lastState : 'a option = None
         
         interface NAudio.Wave.ISampleProvider with
             
-            member val WaveFormat : WaveFormat 
-                = WaveFormat.CreateIeeeFloatWaveFormat(44100, 2) with get
+            member val WaveFormat : WaveFormat = 
+                WaveFormat.CreateIeeeFloatWaveFormat(44100, 2) with get
             
             member this.Read(buffer, offset, count) =
                 for i in offset..count do
@@ -21,14 +21,16 @@ module Playback =
                     Array.set buffer i (float32 value)
 
                     lastState <- Some state
-                    samplePos <- samplePos + 1
-                    
+                    samplePos <- samplePos + 1.0
                     ()
+
                 count
 
-    let playSync (gen:Gen<float,'a,Env>) (duration:float<s>) =
+    let playSync (duration:float<s>) (gen:Gen<float,'a,Env>) =
         let sampleProvider = new SampleProvider<'a>(gen)
-        let waveOut = new WaveOut()
+        use waveOut = new WaveOut()
+        waveOut.DesiredLatency <- 1000
+        waveOut.PlaybackStopped.Add (fun _ -> printfn "Playback stopped.")
         waveOut.Init(sampleProvider)
         waveOut.Play()
         let d = match duration with

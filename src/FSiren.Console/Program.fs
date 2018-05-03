@@ -4,11 +4,12 @@ open FSiren.Playback
 [<EntryPoint>]
 let main argv =
 
-    let comp = circuit {
-        let! r = random()
-        return r
+    circuit {
+        //let! r = random()
+        //return r
+        let! s = sin 500.0<Hz> 0.0<Deg>
+        return s
     }
-
-    playSync comp 2.0<s> |> ignore
+    |> playSync 10.0<s>
 
     0

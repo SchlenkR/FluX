@@ -18,12 +18,11 @@ It can be used to:
 
 open FSiren
 open FSiren.Playback
-  
-let comp = circuit {
-	let! r = random()
-	return r
-}
 
-playSync comp 2.0<s> |> ignore
+circuit {
+    let! s = sin 500.0<Hz> 0.0<Deg>
+    return s
+}
+|> playSync 10.0<s>
 ```
  
