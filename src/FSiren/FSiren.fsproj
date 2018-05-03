@@ -13,4 +13,8 @@
     <PackageReference Update="FSharp.Core" Version="4.3.4" />
   </ItemGroup>
 
+  <Target Name="ExportBinaries" AfterTargets="AfterBuild">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProjectDir)\..\..\binaries" />
+  </Target>
+
 </Project>
