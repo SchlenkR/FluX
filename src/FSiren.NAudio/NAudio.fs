@@ -4,26 +4,30 @@ module Playback =
     
     open NAudio.Wave
     open System.Threading
+    open System
 
     type SampleProvider<'a> (gen:Gen<float,'a,Env>) =
         let mutable samplePos = 0.0;
         let env = { Env.samplePos = samplePos; Env.sampleRate = 44100.0 }
         let mutable lastState : 'a option = None
+
+        let channels = 2
         
         interface NAudio.Wave.ISampleProvider with
             
             member val WaveFormat : WaveFormat = 
-                WaveFormat.CreateIeeeFloatWaveFormat(44100, 2) with get
+                WaveFormat.CreateIeeeFloatWaveFormat(44100, channels) with get
             
             member this.Read(buffer, offset, count) =
-                for i in offset..count do
+                for i in offset..(count / channels) do
                     let value,state = (run gen) lastState { env with samplePos = samplePos }
-                    Array.set buffer i (float32 value)
+                    
+                    Array.set buffer (i * channels) (float32 value)
+                    //Array.set buffer (i * channels + 1) (float32 value)
 
                     lastState <- Some state
                     samplePos <- samplePos + 1.0
                     ()
-
                 count
 
     let playSync (duration:float<s>) (gen:Gen<float,'a,Env>) =
