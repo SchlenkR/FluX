@@ -54,6 +54,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="NAudio.fs" />
     <Content Include="packages.config" />
+    <None Include="test.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -72,8 +73,6 @@
       <HintPath>..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
       <Private>True</Private>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\FSiren\FSiren.fsproj">
       <Name>FSiren</Name>
       <Project>{4f32d2d1-ac7f-40fb-b449-9f010fca5095}</Project>
