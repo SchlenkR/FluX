@@ -1,21 +1,17 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
-    <Compile Include="Core.fs" />
-    <Compile Include="Audio.fs" />
-    <Compile Include="Generators.fs" />
+    <Compile Include="src/Core.fs" />
+    <Compile Include="src/Audio.fs" />
+    <Compile Include="src/Generators.fs" />
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="4.3.4" />
+    <DotNetCliToolReference Include="dotnet-fable" Version="1.1.*" />
   </ItemGroup>
-
   <!--<Target Name="ExportBinaries" AfterTargets="AfterBuild">
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProjectDir)\..\..\binaries" />
   </Target>-->
-
 </Project>

@@ -2,6 +2,8 @@
 
 namespace FSiren
 
+open Fable.Core
+
 [<AutoOpen>]
 module Core =
 

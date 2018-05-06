@@ -1,5 +1,7 @@
 ﻿namespace FSiren
 
+open Fable.Core
+
 [<AutoOpen>]
 module Audio =
 
