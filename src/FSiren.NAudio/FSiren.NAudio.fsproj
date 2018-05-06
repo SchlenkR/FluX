@@ -82,8 +82,8 @@
        Other similar extension points exist, see Microsoft.Common.targets. -->
   <!--<Target Name="BeforeBuild">
   </Target>-->
-  <Target Name="AfterBuild">
+  <!--<Target Name="AfterBuild">
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProjectDir)\..\..\binaries" />
     <Copy SourceFiles="$(OutputPath)\NAudio.dll" DestinationFolder="$(ProjectDir)\..\..\binaries" />
-  </Target>
+  </Target>-->
 </Project>
