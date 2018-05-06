@@ -1,7 +1,6 @@
 ﻿namespace FSiren
 
 open System
-open Fable.Core
 
 [<AutoOpen>]
 module Generators =
