@@ -8,6 +8,8 @@ module Audio =
     [<Measure>] type Deg
 
     type Env = {
-        samplePos:   float;
+        samplePos : float;
         sampleRate : float;
     }
+
+    let toSeconds (env:Env) = (env.samplePos / env.sampleRate) * 1.0<s>

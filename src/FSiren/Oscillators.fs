@@ -10,17 +10,17 @@ module Oscillators =
 
     let counter (seed:float) (inc:float) =
         let f prev = prev + inc
-        build (lift_rv f) seed
+        withSeed (lift_rv f) seed
 
     let toggle seed =
         let f prev = if (prev = true) then (0.0, false) else (1.0, true)
-        build (lift_r f) seed
+        withSeed (lift_r f) seed
 
     let random() =
         let f (prev:Random) =
             let v = prev.NextDouble()
             (v,prev)
-        build (lift_r f) (new Random())
+        withSeed (lift_r f) (new Random())
     
     // TODO
     // static calculation result in strange effects when modulating :D
@@ -38,13 +38,13 @@ module Oscillators =
             //    then newAngle - pi2
             //    else newAngle
             (f newAngle, newAngle)
-        build f 0.0
+        withSeed f 0.0
 
     // TODO: phase
     let sin (frq:float) = osc frq Math.Sin
     let saw (frq:float) = osc frq (fun angle -> 
         1.0 - (1.0 / pi * angle))
-    let triangle (frq:float) = osc frq (fun angle ->
+    let tri (frq:float) = osc frq (fun angle ->
         if angle < pi
         then -1.0 + (2.0 / pi) * angle
         else 3.0 - (2.0 / pi) * angle)

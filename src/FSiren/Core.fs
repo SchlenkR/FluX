@@ -24,15 +24,15 @@ module Core =
     let circuit = CircuitBuilder()
 
 
-    // Convenience
-    type Cont<'v, 'r> =
-        | Cont of ('r -> 'v * Cont<'v, 'r>)
-        member x.Eval = match x with Cont b -> b
-    let start (m:Gen<_,_,_>) =
-        let rec evalInternal oldState readerState = 
-            let v,newS = run m oldState readerState
-            (v, Cont(fun g -> evalInternal (Some newS) g))
-        evalInternal None
+    //// Convenience
+    //type Cont<'v, 'r> =
+    //    | Cont of ('r -> 'v * Cont<'v, 'r>)
+    //    member x.Eval = match x with Cont b -> b
+    //let start (m:Gen<_,_,_>) =
+    //    let rec evalInternal oldState readerState = 
+    //        let v,newS = run m oldState readerState
+    //        (v, Cont(fun g -> evalInternal (Some newS) g))
+    //    evalInternal None
 
 
     // Lifting:
@@ -58,7 +58,7 @@ module Core =
             (fVal,())
 
     // Gen builder for handling seed values.
-    let build statefulFunc seed  =
+    let withSeed statefulFunc seed  =
         let genFunc prev readerState =
             let x = match prev with
                     | Some previousState -> previousState
@@ -66,3 +66,9 @@ module Core =
             statefulFunc x readerState
         Gen(genFunc)
  
+    let readState (f: 'r -> Gen<_,_,_>) =
+        let g prev readerState =
+            let gen = f readerState
+            let innerGen = (run gen)
+            innerGen prev readerState
+        Gen(g)
