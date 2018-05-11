@@ -105,6 +105,7 @@
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
+    <None Include="Demo.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

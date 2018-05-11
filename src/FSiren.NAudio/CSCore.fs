@@ -30,7 +30,7 @@ module Playback =
                     let value,state = (run gen) lastState { env with samplePos = samplePos }
                     
                     Array.set buffer (i * channels) (float32 value)
-                    //Array.set buffer (i * channels + 1) (float32 value)
+                    Array.set buffer (i * channels + 1) 0.0f//(float32 value)
 
                     lastState <- Some state
                     samplePos <- samplePos + 1.0
@@ -39,11 +39,14 @@ module Playback =
                 count
 
     let playSync (duration:float<s>) (gen:Gen<float,'a,Env>) =
-        use waveOut = new WasapiOut()
+        //use waveOut = new WasapiOut()
+        let latencyInMs = 1000
+        use waveOut = new DirectSoundOut(latencyInMs, ThreadPriority.AboveNormal)
+        //waveOut.Latency <- latencyInMs
         let sampleSource = new StereoSampleSource<_>(gen)
         waveOut.Initialize(new SampleToIeeeFloat32(sampleSource));
         waveOut.Play()
-        
+
         let d = match duration with
                 | 0.0<s> -> System.TimeSpan.MaxValue
                 | v -> System.TimeSpan.FromSeconds (float v)
