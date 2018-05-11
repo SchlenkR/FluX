@@ -1,5 +1,6 @@
-﻿namespace FSiren
+﻿namespace FSiren.IO
 
+[<AutoOpen>]
 module Playback =
     
     open System.Threading
@@ -7,6 +8,8 @@ module Playback =
     open CSCore
     open CSCore.SoundOut
     open CSCore.Streams.SampleConverter
+
+    open FSiren
 
     type StereoSampleSource<'a> (gen:Gen<float,'a,Env>) =
         

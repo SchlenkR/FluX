@@ -1,9 +1,9 @@
-﻿#r @"./bin/debug/CsCore.dll"
+﻿#load "CsCoreAudio.fs"
+#r @"./bin/debug/CsCore.dll"
 #r @"./bin/debug/FSiren.dll"
-#r @"./bin/debug/FSiren.NAudio.dll"
 
 open FSiren
-open FSiren.Playback
+open FSiren.IO
 
 circuit {
     //let! m = sin 5.0
