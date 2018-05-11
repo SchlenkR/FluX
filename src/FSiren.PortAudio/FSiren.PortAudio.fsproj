@@ -5,15 +5,15 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>2c9cf000-4503-431c-8ce4-7a80c5829459</ProjectGuid>
+    <ProjectGuid>fa8edf6c-66c0-478d-b4a2-ea8a0178e766</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>FSiren.NAudio</RootNamespace>
-    <AssemblyName>FSiren.NAudio</AssemblyName>
+    <RootNamespace>FSiren.PortAudio</RootNamespace>
+    <AssemblyName>FSiren.PortAudio</AssemblyName>
     <UseStandardResourceNames>true</UseStandardResourceNames>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.3.0</TargetFSharpCoreVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Name>FSiren.NAudio</Name>
+    <Name>FSiren.PortAudio</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,13 +52,10 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="IO.fs" />
     <Content Include="packages.config" />
-    <Compile Include="CSCore.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="CSCore">
-      <HintPath>..\packages\CSCore.1.2.1.2\lib\net35-client\CSCore.dll</HintPath>
-    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core">
       <Name>FSharp.Core</Name>
@@ -75,18 +72,12 @@
       <HintPath>..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <ProjectReference Include="..\FSiren\FSiren.fsproj">
-      <Name>FSiren</Name>
-      <Project>{4f32d2d1-ac7f-40fb-b449-9f010fca5095}</Project>
-      <Private>True</Private>
-    </ProjectReference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets. -->
-  <!--<Target Name="BeforeBuild">
-  </Target>-->
-  <!--<Target Name="AfterBuild">
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProjectDir)\..\..\binaries" />
-    <Copy SourceFiles="$(OutputPath)\NAudio.dll" DestinationFolder="$(ProjectDir)\..\..\binaries" />
-  </Target>-->
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
 </Project>
