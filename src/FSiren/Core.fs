@@ -9,18 +9,21 @@ module Core =
         | Gen of ('s option -> 'r -> ('v * 's))
     let run m = match m with | Gen x -> x
 
+    let bind (m:Gen<'a,'sa,'r>) (f:'a -> Gen<'b,'sb,'r>) : Gen<'b, ('sa * 'sb), 'r> =
+        let stateFunc localState readerState =
+            let prevAState, prevBState = match localState with
+                                            | None -> (None, None)
+                                            | Some (a,b) -> (Some a, Some b)
+            let aValue,aState = run m prevAState readerState
+            let fRes = f aValue
+            let bValue,bState = run fRes prevBState readerState
+            bValue,(aState,bState)
+        Gen stateFunc
+    let ret x = Gen (fun _ b -> (x,()))
+
     type CircuitBuilder() =
-        member this.Bind (m:Gen<'a,'sa,'r>, f:('a -> Gen<'b,'sb,'r>)) : Gen<'b, ('sa * 'sb), 'r> =
-            let stateFunc localState readerState =
-                let prevAState, prevBState = match localState with
-                                             | None -> (None, None)
-                                             | Some (a,b) -> (Some a, Some b)
-                let aValue,aState = run m prevAState readerState
-                let fRes = f aValue
-                let bValue,bState = run fRes prevBState readerState
-                bValue,(aState,bState)
-            Gen stateFunc
-        member this.Return x = Gen(fun _ b -> (x,()))
+        member this.Bind (m, f) = bind m f
+        member this.Return x = ret x
     let circuit = CircuitBuilder()
 
 
@@ -59,20 +62,20 @@ module Core =
 
     // Lifts a function with a seed value to a Block function.
     let liftSeed statefulFunc seed  =
-        let genFunc prev readerState =
+        let f prev readerState =
             let x = match prev with
                     | Some previousState -> previousState
                     | None -> seed
             statefulFunc x readerState
-        Gen(genFunc)
+        Gen f
  
     let getState () =
         let f prev readerState = (readerState,())
-        Gen(f)
+        Gen f
 
     let readState (f: 'r -> Gen<_,_,_>) =
         let g prev readerState =
             let gen = f readerState
             let innerGen = (run gen)
             innerGen prev readerState
-        Gen(g)
+        Gen g
