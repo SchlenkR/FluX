@@ -57,8 +57,8 @@ module Core =
             let fVal = f readerState
             (fVal,())
 
-    // Gen builder for handling seed values.
-    let withSeed statefulFunc seed  =
+    // Lifts a function with a seed value to a Block function.
+    let liftSeed statefulFunc seed  =
         let genFunc prev readerState =
             let x = match prev with
                     | Some previousState -> previousState
@@ -66,6 +66,10 @@ module Core =
             statefulFunc x readerState
         Gen(genFunc)
  
+    let getState () =
+        let f prev readerState = (readerState,())
+        Gen(f)
+
     let readState (f: 'r -> Gen<_,_,_>) =
         let g prev readerState =
             let gen = f readerState
