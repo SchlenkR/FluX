@@ -1,5 +1,5 @@
 ﻿#r @"./FLooping/bin/debug/netstandard2.0/FLooping.dll"
-#load "./FLooping/CsCoreAudio.fsx"
+#r @"./FLooping.IO/bin/debug/netstandard2.0/FLooping.dll"
 
 open FLooping
 open FLooping.IO
