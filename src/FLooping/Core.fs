@@ -1,6 +1,4 @@
-// Origin: "DAS IST ES - Ma_a_Mb_Mc (2).fsx"
-
-namespace FSiren
+namespace FLooping
 
 [<AutoOpen>]
 module Core =
@@ -21,10 +19,10 @@ module Core =
         Gen stateFunc
     let ret x = Gen (fun _ b -> (x,()))
 
-    type CircuitBuilder() =
+    type LoopBuilder() =
         member this.Bind (m, f) = bind m f
         member this.Return x = ret x
-    let circuit = CircuitBuilder()
+    let loop = LoopBuilder()
 
 
     //// Convenience
@@ -73,7 +71,7 @@ module Core =
         let f prev readerState = (readerState,())
         Gen f
 
-    let readState (f: 'r -> Gen<_,_,_>) =
+    let interceptState (f: 'r -> Gen<_,_,_>) =
         let g prev readerState =
             let gen = f readerState
             let innerGen = (run gen)

@@ -54,7 +54,6 @@
     <Compile Include="AssemblyInfo.fs" />
     <Content Include="packages.config" />
     <Compile Include="CSCoreAudio.fs" />
-    <None Include="Demo.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="CSCore">
@@ -71,8 +70,10 @@
       <HintPath>..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <ProjectReference Include="..\FSiren\FSiren.fsproj">
-      <Name>FSiren</Name>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FLooping\FLooping.fsproj">
+      <Name>FLooping</Name>
       <Project>{4f32d2d1-ac7f-40fb-b449-9f010fca5095}</Project>
       <Private>True</Private>
     </ProjectReference>

@@ -1,11 +1,10 @@
-﻿#r @"./bin/debug/FSiren.dll"
-#r @"./bin/debug/CsCore.dll"
-#load "CsCoreAudio.fs"
+﻿#r @"./FLooping/bin/debug/netstandard2.0/FLooping.dll"
+#load "./FLooping/CsCoreAudio.fsx"
 
-open FSiren
-open FSiren.IO
+open FLooping
+open FLooping.IO
 
-signal {
+loop {
     //let! m = sin 5.0
     //let! s = sin (1000.0 * (1.0 - m * 0.01))
     //return s
@@ -17,7 +16,7 @@ signal {
         else sin 2000.0
     return v
 
-    //let! v = readState (fun (env:Env) -> 
+    //let! v = interceptState (fun (env:Env) -> 
     //    if (env.samplePos / env.sampleRate) % 1.0 > 0.5 
     //    then tri 2000.0 
     //    else sin 2000.0)

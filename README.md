@@ -1,11 +1,6 @@
 # Synopsis
 
-FSiren is a library that helps describing signal processing computations in a convenient way.
-It can be used to:
-
-* Generate / modify audio signals
-* Simulation
-* PLC (programmable logic controller) / automation tasks
+FLooping is a signal processing library written in F#. It is designed for audio synthesis and effect processing, but can also be used for other purposes like simulation or control tasks (PLC). FLooping processes sample by sample, thus enabling to build low-level DSP structures such as filters, oscillators and other DSP building blocks. You connect those modules in a way as if they were pure functions (even if they are state based). FLooping handles the instanciation, the state and the evaluation of these functions for you.
 
 # Code Examples
 

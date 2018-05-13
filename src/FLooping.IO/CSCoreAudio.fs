@@ -1,16 +1,14 @@
-﻿namespace FSiren.IO
+﻿namespace FLooping.IO
+
+open System.Threading
+open CSCore
+open CSCore.SoundOut
+open CSCore.Streams.SampleConverter
+open FLooping
 
 [<AutoOpen>]
 module Playback =
     
-    open System.Threading
-    
-    open CSCore
-    open CSCore.SoundOut
-    open CSCore.Streams.SampleConverter
-
-    open FSiren
-
     type StereoSampleSource<'a> (gen:Gen<float,'a,Env>) =
         
         let channels = 2

@@ -1,4 +1,4 @@
-﻿namespace FSiren
+﻿namespace FLooping
 
 [<AutoOpen>]
 module Audio =
