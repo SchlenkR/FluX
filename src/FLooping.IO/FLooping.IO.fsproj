@@ -74,10 +74,11 @@
        Other similar extension points exist, see Microsoft.Common.targets. -->
   <!--<Target Name="BeforeBuild">
   </Target>-->
-  <!--<Target Name="AfterBuild">
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProjectDir)\..\..\binaries" />
-    <Copy SourceFiles="$(OutputPath)\NAudio.dll" DestinationFolder="$(ProjectDir)\..\..\binaries" />
-  </Target>-->
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(OutputPath)\FLooping.dll" DestinationFolder="$(ProjectDir)\..\..\bin" />
+    <Copy SourceFiles="$(OutputPath)\CSCore.dll" DestinationFolder="$(ProjectDir)\..\..\bin" />
+    <Copy SourceFiles="$(OutputPath)\FLooping.IO.dll" DestinationFolder="$(ProjectDir)\..\..\bin" />
+  </Target>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3' Or $(TargetFrameworkVersion) == 'v4.7' Or $(TargetFrameworkVersion) == 'v4.7.1' Or $(TargetFrameworkVersion) == 'v4.7.2')">
       <ItemGroup>

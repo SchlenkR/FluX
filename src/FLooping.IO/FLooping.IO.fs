@@ -53,5 +53,22 @@ module Playback =
                 | v -> System.TimeSpan.FromSeconds (float v)
         Thread.Sleep d
         waveOut.Stop()
-
         ()
+
+    let eval cycles (gen:Gen<float,'a,Env>) =
+        let sampleRate = 44100
+        let mutable samplePos = 0.0;
+        let env = { Env.samplePos = samplePos; Env.sampleRate = (float sampleRate) }
+        let mutable lastState : 'a option = None
+
+        seq{
+            for i in 0..cycles do
+                let value,state = (run gen) lastState { env with samplePos = samplePos }
+
+                lastState <- Some state
+                samplePos <- samplePos + 1.0
+
+                yield (float32 value)
+        }
+        |> Seq.toList
+
