@@ -19,8 +19,7 @@ open FLooping
 open FLooping.IO
 
 
-// increment a counter by 1, starting with 0
-// and print it to the output.
+// increment a counter by 1, starting with 0 and print it to the output.
 loop {
     let! x = counter 0.0 1.0
     return x
@@ -37,8 +36,7 @@ loop {
 |> playSync 5.0<s>
 
 
-// modulate the frequence of a sawtooth wave
-// with an LFO (low frequency oscillator)
+// modulate the frequence of a sawtooth wave with an LFO (low frequency oscillator)
 loop {
     let! modulator = sin 5.0
     let amount = 0.05
@@ -48,8 +46,7 @@ loop {
 |> playSync 5.0<s>
 
 
-// "tatü-tataa":
-// switch the waveform every 1/2 second
+// "tatÃ¼-tataa": switch the waveform every 1/2 second
 loop {
     // get environment
     let! env = getState()
