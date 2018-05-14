@@ -1,6 +1,6 @@
-﻿#r @"./FLooping/bin/debug/netstandard2.0/FLooping.dll"
-#r @"./packages/CSCore/lib/net35-client/CSCore.dll"
-#load @"./FLooping.IO/FLooping.IO.fsx"
+﻿#r @"./../FLooping/bin/debug/netstandard2.0/FLooping.dll"
+#r @"./../packages/CSCore/lib/net35-client/CSCore.dll"
+#r @"./../FLooping.IO/bin/debug/FLooping.IO.dll"
 
 open FLooping
 open FLooping.IO
