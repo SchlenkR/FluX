@@ -10,7 +10,7 @@ FLooping is a signal processing library written in F#. It is designed for audio 
 * A "bin" folder under the repository root is created with all necessary binaries. Currently, there is no nuget package available yet.
 * Send the sample code to F# interactive by pressing Alt+Enter in Visual Studio.
 
-```
+```fsharp
 #r @"./../../bin/FLooping.dll"
 #r @"./../../bin/CSCore.dll"
 #r @"./../../bin/FLooping.IO.dll"
