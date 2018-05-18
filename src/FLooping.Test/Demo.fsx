@@ -6,6 +6,9 @@ open FLooping
 open FLooping.IO
 
 
+// --------> evaluate all code lines until here and start playing with the code below
+
+
 // increment a counter by 1, starting with 0 and print it to the output.
 loop {
     let! x = counter 0.0 1.0

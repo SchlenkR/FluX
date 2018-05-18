@@ -5,10 +5,11 @@ FLooping is a signal processing library written in F#. It is designed for audio 
 # Code Examples
 
 ## How to Execute the Samples
-* Clone or download the source
-* Build it with Visual Studio or VS Code
+* Clone or download the source.
+* Build it with Visual Studio or VS Code.
 * A "bin" folder under the repository root is created with all necessary binaries. Currently, there is no nuget package available yet.
-* Send the sample code to F# interactive by pressing Alt+Enter in Visual Studio.
+* The sample code below is a copy of the code in "./src/FLooping.Test/Demo.fsx"
+* Open that file and send it to F# Interactive by selecting the code and press Alt+Enter.
 
 ```fsharp
 #r @"./../../bin/FLooping.dll"
@@ -19,12 +20,15 @@ open FLooping
 open FLooping.IO
 
 
+// --------> evaluate all code lines until here and start playing with the code below
+
+
 // increment a counter by 1, starting with 0 and print it to the output.
 loop {
     let! x = counter 0.0 1.0
     return x
 }
-|> eval 20
+|> toList 20
 |> List.iter (printfn "%f")
 
 
