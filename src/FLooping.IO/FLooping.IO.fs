@@ -6,6 +6,8 @@ open CSCore.Streams.SampleConverter
 open FLooping
 open FLooping.IO.CsCoreInterop
 
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
+
 open System.Threading
 
 [<AutoOpen>]

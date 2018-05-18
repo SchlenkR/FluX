@@ -4,6 +4,7 @@
 
 open FLooping
 open FLooping.IO
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 
 
 // --------> evaluate all code lines until here and start playing with the code below
