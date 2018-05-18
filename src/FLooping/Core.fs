@@ -3,6 +3,7 @@ namespace FLooping
 [<AutoOpen>]
 module Core =
 
+    // the gen monad
     type Gen<'v,'s,'r> =
         | Gen of ('s option -> 'r -> ('v * 's))
     let run m = match m with | Gen x -> x
@@ -19,28 +20,16 @@ module Core =
         Gen stateFunc
     let ret x = Gen (fun _ b -> (x,()))
 
+    // computation builder
     type LoopBuilder() =
         member this.Bind (m, f) = bind m f
         member this.Return x = ret x
     let loop = LoopBuilder()
 
-
-    //// Convenience
-    //type Cont<'v, 'r> =
-    //    | Cont of ('r -> 'v * Cont<'v, 'r>)
-    //    member x.Eval = match x with Cont b -> b
-    //let start (m:Gen<_,_,_>) =
-    //    let rec evalInternal oldState readerState = 
-    //        let v,newS = run m oldState readerState
-    //        (v, Cont(fun g -> evalInternal (Some newS) g))
-    //    evalInternal None
-
-
     // Lifting:
     // v : value as state
     // r : no reader state
     // s : no internal state
-
     let lift_v (f:('a * 'b) -> 'r -> ('a * 'b)) =
         fun prev readerState ->
             let fVal = f prev readerState
@@ -67,13 +56,22 @@ module Core =
             statefulFunc x readerState
         Gen f
  
-    let getState () =
+    let getState() =
         let f prev readerState = (readerState,())
         Gen f
 
+    // TODO: Ist das noch sinnvoll? getState() ist mächtiger.
     let interceptState (f: 'r -> Gen<_,_,_>) =
         let g prev readerState =
             let gen = f readerState
             let innerGen = (run gen)
             innerGen prev readerState
         Gen g
+    
+    let toSequence prepareState (gen:Gen<_,_,_>) =
+        let mutable lastState : 'a option = None
+        Seq.initInfinite (fun i ->
+            let value,newState = (run gen) lastState (prepareState i)
+            lastState <- Some newState
+            value
+        )

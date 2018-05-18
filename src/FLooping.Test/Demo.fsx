@@ -11,7 +11,7 @@ loop {
     let! x = counter 0.0 1.0
     return x
 }
-|> eval 20
+|> toList 20
 |> List.iter (printfn "%f")
 
 

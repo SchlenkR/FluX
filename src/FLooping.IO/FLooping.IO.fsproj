@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Content Include="paket.references" />
+    <Compile Include="CsCoreSampleSource.fs" />
     <Compile Include="FLooping.IO.fs" />
   </ItemGroup>
   <ItemGroup>
