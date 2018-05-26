@@ -10,10 +10,10 @@ module Audio =
         sampleRate : float;
     }
 
-    //// Uses Env type explicitly to simplify usage.
-    //type SignalBuilder() =
-    //    member this.Bind (m, f) = Core.bind m f
-    //    member this.Return x = Core.ret x
-    //let signal = SignalBuilder()
+    // Simplifies usage with 'Env' as reader state type.
+    type LoopBuilder() =
+        member this.Bind ((m:Block<_,_,Env>), f) = Core.bind m f
+        member this.Return x = Core.ret x
+    let loop = LoopBuilder()
 
     let toSeconds (env:Env) = (env.samplePos / env.sampleRate) * 1.0<s>
