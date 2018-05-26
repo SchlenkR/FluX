@@ -1,14 +1,17 @@
 # Synopsis
 
-FLooping is a signal processing library written in F#. It is designed for audio synthesis and effect processing, but can also be used for other purposes like simulation or control tasks (PLC). FLooping processes sample by sample, thus enabling to build low-level DSP structures such as filters, oscillators and other DSP building blocks. You connect those modules in a way as if they were pure functions (even if they are state based). FLooping handles the instanciation, the state and the evaluation of these functions for you.
+FLooping is a signal processing library written in F#. It is designed for audio synthesis and effect processing, but can also be used for other purposes like simulation or control tasks (PLC). FLooping processes sample by sample, thus enabling to build low-level DSP structures such as filters, oscillators and other DSP building blocks.
+
+FLooping simplifies the way in that state based functions are composed. Unlike in imperative languages where instanciation and evaluation of components have to be handled in user code, FLooping handles per-component state and evaluation of components for you. This leads to a way of describing signal flows where you can define components in-line and treat them as if they were pure functions.
 
 # Code Examples
 
 ## How to Execute the Samples
+
 * Clone or download the source.
 * Build it with Visual Studio or VS Code.
 * A "bin" folder under the repository root is created with all necessary binaries. Currently, there is no nuget package available yet.
-* The sample code below is a copy of the code in "./src/FLooping.Test/Demo.fsx"
+* The sample code below is a copy of the code in `./src/FLooping.Test/Demo.fsx`
 * Open that file and send it to F# Interactive by selecting the code and press Alt+Enter.
 
 ```fsharp
