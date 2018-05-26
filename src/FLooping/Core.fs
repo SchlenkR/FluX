@@ -20,10 +20,10 @@ module Core =
     let ret x = Block (fun _ b -> (x,()))
 
     // computation builder
-    type LoopBuilder() =
+    type BlockBuilder() =
         member this.Bind (m, f) = bind m f
         member this.Return x = ret x
-    let loop = LoopBuilder()
+    let block = BlockBuilder()
 
     // Lifting:
     // v : value as state
