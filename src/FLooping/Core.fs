@@ -26,27 +26,26 @@ module Core =
     let block = BlockBuilder()
 
     // Lifting:
-    // v : value as state
-    // r : no reader state
-    // s : no internal state
-    let lift_v (f:('a * 'b) -> 'r -> ('a * 'b)) =
+    // V    : Lifts a function who's value type is the internal state type.
+    // R    : Lifts a function that doesn't use reader state.
+    // Pure : Lifts a function that has no internal state.
+    // Seed : Lifts a function with an initial value.
+    let liftV (f:('a * 'b) -> 'r -> ('a * 'b)) =
         fun prev readerState ->
             let fVal = f prev readerState
             (fVal,fVal)
-    let lift_r (f:'s -> ('v * 's)) =
+    let liftR (f:'s -> ('v * 's)) =
         fun prev readerState ->
             let fVal,fState = f prev
             (fVal,fState)
-    let lift_rv (f:'v -> 'v) =
+    let liftRV (f:'v -> 'v) =
         fun prev readerState ->
             let fVal = f prev
             (fVal,fVal)
-    let lift_s (f:'r -> 'v) =
+    let liftPure (f:'r -> 'v) =
         fun prev readerState ->
             let fVal = f readerState
             (fVal,())
-
-    // Lifts a function with a seed value to a Block function.
     let liftSeed seed statefulFunc =
         let f prev readerState =
             let x = match prev with

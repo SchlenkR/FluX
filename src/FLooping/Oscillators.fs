@@ -10,7 +10,7 @@ module Oscillators =
         let f (prev:Random) =
             let v = prev.NextDouble()
             (v,prev)
-        lift_r f |> liftSeed (new Random())
+        liftR f |> liftSeed (new Random())
     
     // TODO
     // static calculation result in strange effects when modulating :D
