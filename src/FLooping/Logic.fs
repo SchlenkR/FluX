@@ -4,11 +4,26 @@ open System
 
 [<AutoOpen>]
 module Logic =
-
     let counter (seed:float) (inc:float) =
         let f prev = prev + inc
-        liftSeed (lift_rv f) seed
+        //let x = seed |> liftSeed (lift_rv f)
+        lift_rv f |> liftSeed seed
 
     let toggle seed =
-        let f prev = if (prev = true) then (0.0, false) else (1.0, true)
-        liftSeed (lift_r f) seed
+        let f prev = if prev then (0.0, false) else (1.0, true)
+        lift_r f |> liftSeed seed
+
+    // TODO: ringBuffer
+    // TODO: flipFlop
+    // TODO: hysteresis
+    // TODO: follower
+    // TODO: HP/LP/BP/Comb
+    // TODO: ADSR
+    // TODO: bitCrusher
+    // TODO: chorus
+    // TODO: flanger
+    // TODO: phaser
+    // TODO: reverb
+    // TODO: saturator
+    
+    // TODO: Voices

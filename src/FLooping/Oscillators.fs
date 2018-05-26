@@ -10,7 +10,7 @@ module Oscillators =
         let f (prev:Random) =
             let v = prev.NextDouble()
             (v,prev)
-        liftSeed (lift_r f) (new Random())
+        lift_r f |> liftSeed (new Random())
     
     // TODO
     // static calculation result in strange effects when modulating :D
@@ -28,7 +28,7 @@ module Oscillators =
             //    then newAngle - pi2
             //    else newAngle
             (f newAngle, newAngle)
-        liftSeed f 0.0
+        f |> liftSeed 0.0
 
     // TODO: phase
     let sin (frq:float) = osc frq Math.Sin
