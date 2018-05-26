@@ -1,7 +1,8 @@
 # Synopsis
 
-FLooping is a signal processing library written in F#. It is designed for audio synthesis and effect processing, but can also be used for other purposes like simulation or control tasks (PLC). FLooping processes sample by sample, thus enabling to build low-level DSP structures such as filters, oscillators and other DSP building blocks.
 [![Join the chat at https://gitter.im/FLooping/Lobby](https://badges.gitter.im/FLooping/Lobby.svg)](https://gitter.im/FLooping/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+FLooping is a signal processing library written in F#. It is designed for audio synthesis and effect processing, but can also be used for other purposes like simulation or control tasks (PLC). FLooping processes sample by sample, thus enabling to build low-level DSP structures such as filters, oscillators and other DSP building blocks.
 
 FLooping simplifies the way in that state based functions are composed. Unlike in imperative languages where instanciation and evaluation of components have to be handled in user code, FLooping handles per-component state and evaluation of components for you. This leads to a way of describing signal flows where you can define components in-line and treat them as if they were pure functions.
 
