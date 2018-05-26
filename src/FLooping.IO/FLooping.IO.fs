@@ -13,23 +13,23 @@ open System.Threading
 [<AutoOpen>]
 module Playback =
     
-    let private toSequenceInternal (gen:Gen<float,_,Env>) sampleRate =
-        gen
+    let private toSequenceInternal (block:Block<float,_,Env>) sampleRate =
+        block
         |> FLooping.Core.toSequence (fun i -> { samplePos = (float i); sampleRate = sampleRate })
     
-    let toSequence (gen:Gen<float,_,Env>) = toSequenceInternal gen 44100.0
+    let toSequence (block:Block<float,_,Env>) = toSequenceInternal block 44100.0
 
-    let toList count (gen:Gen<float,'a,Env>) =
-        (toSequence gen) 
+    let toList count (block:Block<float,'a,Env>) =
+        (toSequence block) 
         |> Seq.take count
         |> Seq.toList
 
-    let playSync (duration:float<s>) (gen:Gen<float,'a,Env>) =
+    let playSync (duration:float<s>) (block:Block<float,'a,Env>) =
         let latencyInMs = 1000
         use waveOut = new DirectSoundOut(latencyInMs, ThreadPriority.AboveNormal)
 
-        let genSequence = toSequenceInternal gen
-        let sampleSource = new StereoSampleSource<_>(genSequence)
+        let blockSequence = toSequenceInternal block
+        let sampleSource = new StereoSampleSource<_>(blockSequence)
 
         waveOut.Initialize(new SampleToIeeeFloat32(sampleSource));
         waveOut.Play()

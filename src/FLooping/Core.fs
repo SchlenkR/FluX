@@ -3,12 +3,11 @@ namespace FLooping
 [<AutoOpen>]
 module Core =
 
-    // the gen monad
-    type Gen<'v,'s,'r> =
-        | Gen of ('s option -> 'r -> ('v * 's))
-    let run m = match m with | Gen x -> x
+    type Block<'v,'s,'r> =
+        | Block of ('s option -> 'r -> ('v * 's))
+    let run m = match m with | Block x -> x
 
-    let bind (m:Gen<'a,'sa,'r>) (f:'a -> Gen<'b,'sb,'r>) : Gen<'b, ('sa * 'sb), 'r> =
+    let bind (m:Block<'a,'sa,'r>) (f:'a -> Block<'b,'sb,'r>) : Block<'b, ('sa * 'sb), 'r> =
         let stateFunc localState readerState =
             let prevAState, prevBState = match localState with
                                             | None -> (None, None)
@@ -17,8 +16,8 @@ module Core =
             let fRes = f aValue
             let bValue,bState = run fRes prevBState readerState
             bValue,(aState,bState)
-        Gen stateFunc
-    let ret x = Gen (fun _ b -> (x,()))
+        Block stateFunc
+    let ret x = Block (fun _ b -> (x,()))
 
     // computation builder
     type LoopBuilder() =
@@ -48,30 +47,29 @@ module Core =
             (fVal,())
 
     // Lifts a function with a seed value to a Block function.
-    let liftSeed statefulFunc seed  =
+    let liftSeed seed statefulFunc =
         let f prev readerState =
             let x = match prev with
                     | Some previousState -> previousState
                     | None -> seed
             statefulFunc x readerState
-        Gen f
+        Block f
  
     let getState() =
         let f prev readerState = (readerState,())
-        Gen f
+        Block f
 
-    // TODO: Ist das noch sinnvoll? getState() ist mächtiger.
-    let interceptState (f: 'r -> Gen<_,_,_>) =
-        let g prev readerState =
-            let gen = f readerState
-            let innerGen = (run gen)
-            innerGen prev readerState
-        Gen g
+    // let interceptState (f: 'r -> Block<_,_,_>) =
+    //     let g prev readerState =
+    //         let block = f readerState
+    //         let innerBlock = (run block)
+    //         innerBlock prev readerState
+    //     Block g
     
-    let toSequence prepareState (gen:Gen<_,_,_>) =
+    let toSequence prepareState (block:Block<_,_,_>) =
         let mutable lastState : 'a option = None
         Seq.initInfinite (fun i ->
-            let value,newState = (run gen) lastState (prepareState i)
+            let value,newState = (run block) lastState (prepareState i)
             lastState <- Some newState
             value
         )
