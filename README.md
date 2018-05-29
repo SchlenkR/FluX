@@ -11,15 +11,13 @@ FLooping simplifies the way in that state based functions are composed. Unlike i
 ## How to Execute the Samples
 
 * Clone or download the source.
-* Build it with Visual Studio or VS Code.
-* A "bin" folder under the repository root is created with all necessary binaries. Currently, there is no nuget package available yet.
-* The sample code below is a copy of the code in `./src/FLooping.Test/Demo.fsx`
+* The sample code below is a copy of the code in `./Demo.fsx`
 * Open that file and send it to F# Interactive by selecting the code and press Alt+Enter.
 
 ```fsharp
-#r @"./../../bin/FLooping.dll"
-#r @"./../../bin/CSCore.dll"
-#r @"./../../bin/FLooping.IO.dll"
+#r @"./dist/FLooping.dll"
+#r @"./dist/CSCore.dll"
+#r @"./dist/FLooping.IO.dll"
 
 open FLooping
 open FLooping.IO

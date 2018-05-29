@@ -1,6 +1,6 @@
-﻿#r @"./../../bin/FLooping.dll"
-#r @"./../../bin/CSCore.dll"
-#r @"./../../bin/FLooping.IO.dll"
+﻿#r @"./dist/FLooping.dll"
+#r @"./dist/CSCore.dll"
+#r @"./dist/FLooping.IO.dll"
 
 open FLooping
 open FLooping.IO
