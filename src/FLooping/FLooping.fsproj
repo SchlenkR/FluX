@@ -6,9 +6,8 @@
   <ItemGroup>
     <Compile Include="Core.fs" />
     <Compile Include="Audio.fs" />
-    <Compile Include="Logic.fs" />
     <Compile Include="Math.fs" />
-    <Compile Include="Oscillators.fs" />
+    <Compile Include="BuildingBlocks.fs" />
   </ItemGroup>
   <!--<Target Name="ExportBinaries" AfterTargets="AfterBuild">
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProjectDir)\..\..\binaries" />

@@ -1,10 +1,19 @@
 ﻿namespace FLooping
 
 open System
+open Core
 open Math
 
 [<AutoOpen>]
-module Oscillators =
+module BuildingBlocks =
+
+    let counter (seed:float) (inc:float) =
+        let f prev = prev + inc
+        liftRV f |> liftSeed seed
+
+    let toggle seed =
+        let f prev = if prev then (0.0, false) else (1.0, true)
+        liftR f |> liftSeed seed
 
     let noise() =
         let f (prev:Random) =
@@ -40,3 +49,18 @@ module Oscillators =
         else 3.0 - (2.0 / pi) * angle)
     let square (frq:float) = osc frq (fun angle ->
         if angle < pi then 1.0 else -1.0)
+
+    // TODO: ringBuffer
+    // TODO: flipFlop
+    // TODO: hysteresis
+    // TODO: follower
+    // TODO: HP/LP/BP/Comb
+    // TODO: ADSR
+    // TODO: bitCrusher
+    // TODO: chorus
+    // TODO: flanger
+    // TODO: phaser
+    // TODO: reverb
+    // TODO: saturator
+    
+    // TODO: Voices

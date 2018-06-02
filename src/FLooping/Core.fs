@@ -25,27 +25,37 @@ module Core =
         member this.Return x = ret x
     let block = BlockBuilder()
 
-    // Lifting:
-    // V    : Lifts a function who's value type is the internal state type.
-    // R    : Lifts a function that doesn't use reader state.
-    // Pure : Lifts a function that has no internal state.
-    // Seed : Lifts a function with an initial value.
+
+    (*
+        Lifting functions  
+    *)
+
+    /// Lifts a function who's value is fed into the next cycle as state.
     let liftV (f:('a * 'b) -> 'r -> ('a * 'b)) =
         fun prev readerState ->
             let fVal = f prev readerState
             (fVal,fVal)
+    
+    /// Lifts a function that doesn't use global reader state.
     let liftR (f:'s -> ('v * 's)) =
         fun prev readerState ->
             let fVal,fState = f prev
             (fVal,fState)
+
+    /// Lifts a function that doesn't use global reader state
+    /// and who's value is fed into the next cycle as state.
     let liftRV (f:'v -> 'v) =
         fun prev readerState ->
             let fVal = f prev
             (fVal,fVal)
+
+    /// Lifts a function that has no internal state.
     let liftPure (f:'r -> 'v) =
         fun prev readerState ->
             let fVal = f readerState
             (fVal,())
+
+    /// Lifts a function with an initial value.
     let liftSeed seed statefulFunc =
         let f prev readerState =
             let x = match prev with
@@ -54,21 +64,17 @@ module Core =
             statefulFunc x readerState
         Block f
  
+    /// Gets the global reader state.
     let getState() =
         let f prev readerState = (readerState,())
         Block f
 
-    // let interceptState (f: 'r -> Block<_,_,_>) =
-    //     let g prev readerState =
-    //         let block = f readerState
-    //         let innerBlock = (run block)
-    //         innerBlock prev readerState
-    //     Block g
-    
-    let toSequence prepareState (block:Block<_,_,_>) =
+    /// Converts a looping monad into a sequence.
+    /// The getReaderState function is called for each evaluation.
+    let toSequence getReaderState (block:Block<_,_,_>) =
         let mutable lastState : 'a option = None
         Seq.initInfinite (fun i ->
-            let value,newState = (run block) lastState (prepareState i)
+            let value,newState = (run block) lastState (getReaderState i)
             lastState <- Some newState
             value
         )
