@@ -3,27 +3,36 @@ namespace FLooping
 [<AutoOpen>]
 module Core =
 
-    type Block<'v,'s,'r> =
-        | Block of ('s option -> 'r -> ('v * 's))
-    let run m = match m with | Block x -> x
+    type L<'v,'s,'r> =
+        | L of ('s option -> 'r -> ('v * 's))
+    let run m = match m with | L x -> x
 
-    let bind (m:Block<'a,'sa,'r>) (f:'a -> Block<'b,'sb,'r>) : Block<'b, ('sa * 'sb), 'r> =
+    //type RetVal<'a,'b> =
+    //    | V of 'a
+    //    | VS of ('a * 'b)
+
+    let bind (m:L<'a,'sa,'r>) (f:'a -> L<'b,'sb,'r>) : L<'b, ('sa * 'sb), 'r> =
         let stateFunc localState readerState =
             let prevAState, prevBState = match localState with
-                                            | None -> (None, None)
-                                            | Some (a,b) -> (Some a, Some b)
+                                         | None -> (None, None)
+                                         | Some (a,b) -> (Some a, Some b)
             let aValue,aState = run m prevAState readerState
             let fRes = f aValue
             let bValue,bState = run fRes prevBState readerState
             bValue,(aState,bState)
-        Block stateFunc
-    let ret x = Block (fun _ b -> (x,()))
+        L stateFunc
+    let ret x = L (fun _ b -> (x,()))
+    //let ret x = match x with
+    //            | v -> L (fun _ b -> (x,()))
+    //            | (v,s) -> L (fun _ b -> (v,s))
+    let retFrom l = l
 
     // computation builder
-    type BlockBuilder() =
+    type CircuitBuilder() =
         member this.Bind (m, f) = bind m f
         member this.Return x = ret x
-    let block = BlockBuilder()
+        member this.ReturnFrom l = retFrom l
+    let circuit = CircuitBuilder()
 
 
     (*
@@ -50,10 +59,7 @@ module Core =
             (fVal,fVal)
 
     /// Lifts a function that has no internal state.
-    let liftPure (f:'r -> 'v) =
-        fun prev readerState ->
-            let fVal = f readerState
-            (fVal,())
+    let liftPure (f:'r -> 'v) = fun p r -> (f r,())
 
     /// Lifts a function with an initial value.
     let liftSeed seed statefulFunc =
@@ -62,19 +68,28 @@ module Core =
                     | Some previousState -> previousState
                     | None -> seed
             statefulFunc x readerState
-        Block f
+        L f
+
+    // TODO: Naming for wraps
+
+    /// Wraps a value into a looping function.
+    let wrap1 v = L(fun p r -> (v,v))
+
+    /// Wraps a value and a feedback state into a looping function.
+    let wrap2 v s = L(fun p r -> (v,s))
  
     /// Gets the global reader state.
-    let getState() =
-        let f prev readerState = (readerState,())
-        Block f
+    let getEnv() = L(fun p r -> (r,()))
+ 
+    /// Gets the local state.
+    let getPrev() = L(fun p r -> (p,()))
 
     /// Converts a looping monad into a sequence.
     /// The getReaderState function is called for each evaluation.
-    let toSequence getReaderState (block:Block<_,_,_>) =
+    let toSequence getReaderState (l:L<_,_,_>) =
         let mutable lastState : 'a option = None
         Seq.initInfinite (fun i ->
-            let value,newState = (run block) lastState (getReaderState i)
+            let value,newState = (run l) lastState (getReaderState i)
             lastState <- Some newState
             value
         )
