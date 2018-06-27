@@ -1,9 +1,8 @@
-﻿#r @"./dist/FLooping.dll"
-#r @"./dist/CSCore.dll"
-#r @"./dist/FLooping.IO.dll"
+﻿#load @"./src/New/FLooping.fsx"
 
-
-open FLooping
+open FLooping.Core
+open FLooping.Audio
+open FLooping.BuildingBlocks
 open FLooping.IO
 open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 

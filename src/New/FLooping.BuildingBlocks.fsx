@@ -1,4 +1,6 @@
-﻿namespace FLooping
+﻿#load @"FLooping.Core.fsx"
+#load @"FLooping.Audio.fsx"
+#load @"FLooping.Math.fsx"
 
 open System
 open Core
