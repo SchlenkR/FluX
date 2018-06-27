@@ -18,10 +18,26 @@ let retFrom l = l
 
 // computation builder
 type CircuitBuilder() =
-    member this.Bind (m, f) = bind m f
-    member this.Return x = ret x
-    member this.ReturnFrom l = retFrom l
+    member __.Bind (m, f) = bind m f
+    member __.Return x = ret x
+    member __.ReturnFrom l = retFrom l
 let circuit = CircuitBuilder()
+
+
+
+type Feed<'a, 'b> = { back:'a; out:'b }
+/// Feedback
+let (-=>) seed (f: 'a -> L<Feed<'a, 'v>,'s,'r>) =
+    let f1 = fun prev r ->
+        let myPrev,innerPrev = match prev with
+                                | None            -> seed,None
+                                | Some (my,inner) -> my,inner
+        let l = f myPrev
+        let monad = (run l)
+        let feed,innerState = monad innerPrev r
+        let res = (feed.out, (feed.back, Some innerState))
+        res
+    L f1
 
 
 (*
