@@ -17,11 +17,11 @@ let ret x = L (fun _ _ -> (x,()))
 let retFrom l = l
 
 // computation builder
-type CircuitBuilder() =
+type LoopBuilder() =
     member __.Bind (m, f) = bind m f
     member __.Return x = ret x
     member __.ReturnFrom l = retFrom l
-let circuit = CircuitBuilder()
+let loop = LoopBuilder()
 
 
 
@@ -82,7 +82,7 @@ let delay seed current =
 
 
 /// Gets the global reader state.
-let env() = L(fun p r -> (r,()))
+let read() = L(fun p r -> (r,()))
 
 
 
