@@ -12,9 +12,9 @@ module Audio =
 
     // Simplifies usage with 'Env' as reader state type.
     type LoopBuilder() =
-        member this.Bind ((m:L<_,_,Env>), f) = Core.bind m f
-        member this.Return x = Core.ret x
-        member this.ReturnFrom l = Core.retFrom l
+        member __.Bind ((m:L<_,_,Env>), f) = Core.bind m f
+        member __.Return x = Core.ret x
+        member __.ReturnFrom l = Core.retFrom l
     let loop = LoopBuilder()
 
     let toSeconds (env:Env) = (env.samplePos / env.sampleRate) * 1.0<s>

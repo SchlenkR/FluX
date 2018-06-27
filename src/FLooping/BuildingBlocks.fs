@@ -2,6 +2,7 @@
 
 open System
 open Core
+open Audio
 open Math
 
 [<AutoOpen>]
@@ -9,17 +10,25 @@ module BuildingBlocks =
 
     let counter (seed:float) (inc:float) =
         let f prev = prev + inc
-        liftRV f |> liftSeed seed
+        let lifted = liftRV f 
+        lifted |> liftSeed seed |> L
+    
+    // let counterAlt (seed:float) (inc:float) = loop {
+    //     let! prev = getPrev()
+    //     let curr = 0.0 + inc
+    //     let l = (wrap1 curr)
+    //     return! l
+    // }
 
     let toggle seed =
         let f prev = if prev then (0.0, false) else (1.0, true)
-        liftR f |> liftSeed seed
+        liftR f |> liftSeed seed |> L
 
     let noise() =
         let f (prev:Random) =
             let v = prev.NextDouble()
             (v,prev)
-        liftR f |> liftSeed (new Random())
+        liftR f |> liftSeed (new Random()) |> L
     
     // TODO
     // static calculation result in strange effects when modulating :D
@@ -37,7 +46,7 @@ module BuildingBlocks =
             //    then newAngle - pi2
             //    else newAngle
             (f newAngle, newAngle)
-        f |> liftSeed 0.0
+        f |> liftSeed 0.0 |> L
 
     // TODO: phase
     let sin (frq:float) = osc frq Math.Sin
