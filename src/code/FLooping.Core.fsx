@@ -6,8 +6,8 @@ let run m = match m with | L x -> x
 let bind (m:L<'a,'sa,'r>) (f:'a -> L<'b,'sb,'r>) : L<'b, ('sa * 'sb), 'r> =
     let stateFunc localState readerState =
         let prevAState,prevBState = match localState with
-                                     | None       -> (None, None)
-                                     | Some (a,b) -> (Some a, Some b)
+                                    | None       -> (None, None)
+                                    | Some (a,b) -> (Some a, Some b)
         let aValue,aState = run m prevAState readerState
         let fRes = f aValue
         let bValue,bState = run fRes prevBState readerState
@@ -25,9 +25,9 @@ let loop = LoopBuilder()
 
 
 
-type Feed<'a, 'b> = { back:'a; out:'b }
+type ResWithFeedback<'a, 'b> = { feedback:'a; out:'b }
 /// Feedback
-let (-=>) seed (f: 'a -> L<Feed<'a, 'v>,'s,'r>) =
+let (-=>) seed (f: 'a -> L<ResWithFeedback<'a, 'v>,'s,'r>) =
     let f1 = fun prev r ->
         let myPrev,innerPrev = match prev with
                                 | None            -> seed,None
@@ -35,7 +35,7 @@ let (-=>) seed (f: 'a -> L<Feed<'a, 'v>,'s,'r>) =
         let l = f myPrev
         let monad = (run l)
         let feed,innerState = monad innerPrev r
-        let res = (feed.out, (feed.back, Some innerState))
+        let res = (feed.out, (feed.feedback, Some innerState))
         res
     L f1
 
