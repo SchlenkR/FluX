@@ -21,13 +21,15 @@ let counter (seed:float) (inc:float) =
 // }
 
 let toggle seed =
-    let f prev = if prev then (0.0, false) else (1.0, true)
+    let f prev = if prev
+                 then {value=0.0; state=false}
+                 else {value=1.0; state=true}
     liftR f |> liftSeed seed |> L
 
 let noise() =
     let f (prev:Random) =
         let v = prev.NextDouble()
-        (v,prev)
+        {value=v; state=prev}
     liftR f |> liftSeed (new Random()) |> L
 
 // TODO
@@ -45,7 +47,7 @@ let private osc (frq:float) f =
         //    if newAngle > pi2 
         //    then newAngle - pi2
         //    else newAngle
-        (f newAngle, newAngle)
+        {value=f newAngle; state=newAngle}
     f |> liftSeed 0.0 |> L
 
 // TODO: phase
