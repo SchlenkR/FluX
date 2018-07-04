@@ -1,16 +1,40 @@
-﻿#load @"FLooping.Core.fsx"
-#load @"FLooping.Audio.fsx"
-#load @"FLooping.Math.fsx"
-#load @"FLooping.BuildingBlocks.fsx"
-#load @"CsCoreInterop.fsx"
+﻿#r @"../packages/CSCore/lib/net35-client/cscore.dll"
 
+#load @"FLooping.Core.fsx"
+#load @"FLooping.Audio.fsx"
+
+open CSCore
 open CSCore.SoundOut
 open CSCore.Streams.SampleConverter
-open CsCoreInterop
 open FLooping.Core
 open FLooping.Audio
 open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 open System.Threading
+
+type StereoSampleSource<'a> (sequenceFactory: float -> float seq) =
+    let channels = 2
+    let sampleRate = 44100
+    let sequence = (float sampleRate) |> sequenceFactory
+    let enumerator = sequence.GetEnumerator()
+
+    interface CSCore.ISampleSource with
+        member val CanSeek = false with get
+        member val Length = 0L with get
+        member val Position = 0L with get, set
+        member val WaveFormat : WaveFormat = 
+            new WaveFormat(sampleRate, 32, channels, AudioEncoding.IeeeFloat) with get
+
+        member __.Dispose() = ()
+        
+        member __.Read(buffer, offset, count) =
+            for i in offset..((count - 1) / channels) do
+                enumerator.MoveNext() |> ignore
+                let value = float32 enumerator.Current
+                
+                Array.set buffer (i * channels) value
+                Array.set buffer (i * channels + 1) value
+                ()
+            count
 
 
 let private toSequenceInternal (loop:L<float,_,Env>) sampleRate =
