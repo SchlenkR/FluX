@@ -1,4 +1,4 @@
-﻿#load @"./src/code/FLooping.fsx"
+﻿#load @"./src/FLooping.fsx"
 
 open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 
@@ -8,11 +8,10 @@ open FLooping.BuildingBlocks
 open FLooping.IO
 
 
+///
+/// Evaluate all code lines until here and start playing with the code below.
+///
 
-
-(* 
-  evaluate all code lines until here and start playing with the code below
-*)
 
 
 // increment a counter by 1, starting with 0 and print it to the output.

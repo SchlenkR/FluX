@@ -11,19 +11,27 @@ FLooping simplifies the way in that state based functions are composed. Unlike i
 ## How to Execute the Samples
 
 * Clone or download the source.
+* Restore paket dependencies: In the root folder, run the following command:
+    * ```.paket/paket.exe install```
+    * (Windows cmd:) ```".paket/paket.exe" install```
 * The sample code below is a copy of the code in `./Demo.fsx`
 * Open that file and send it to F# Interactive by selecting the code and press Alt+Enter.
 
 ```fsharp
-#r @"./dist/FLooping.dll"
-#r @"./dist/CSCore.dll"
-#r @"./dist/FLooping.IO.dll"
+#load @"./src/FLooping.fsx"
 
-open FLooping
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
+
+open FLooping.Core
+open FLooping.Audio
+open FLooping.BuildingBlocks
 open FLooping.IO
 
 
-// --------> evaluate all code lines until here and start playing with the code below
+///
+/// Evaluate all code lines until here and start playing with the code below.
+///
+
 
 
 // increment a counter by 1, starting with 0 and print it to the output.
@@ -56,13 +64,23 @@ loop {
 // "tatü-tataa": switch the waveform every 1/2 second
 loop {
     // get environment
-    let! env = getState()
+    let! e = env()
     let! v =
-        if (env.samplePos / env.sampleRate) % 1.0 > 0.5 
+        if (e.samplePos / e.sampleRate) % 1.0 > 0.5 
         then tri 2000.0 
         else sin 2000.0
     return v
 }
 |> playSync 5.0<s>
+
+
+// A feedback loop: Feed the value of a counter back to the next evaluation.
+1.0 -=> fun last -> loop {
+    let current = last + 0.1
+    return { out=current; feedback=current }
+}
+|> toList 5
+|> List.iter (printfn "%f")
+
 ```
  
