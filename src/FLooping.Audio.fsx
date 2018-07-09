@@ -5,8 +5,9 @@ open FLooping.Core
 
 open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 
-let pi = Math.PI
-let pi2 = 2.0 * pi
+// Helper
+let private pi = Math.PI
+let private pi2 = 2.0 * pi
 
 
 type Env = {
@@ -20,19 +21,16 @@ let env() = L(fun p (r:Env) -> {value=r; state=()})
 
 
 
-
-
 let counter (seed:float) (inc:float) =
     let f prev = prev + inc
     let lifted = liftRV f 
     lifted |> liftSeed seed |> L
 
-// let counterAlt (seed:float) (inc:float) = loop {
-//     let! prev = getPrev()
-//     let curr = 0.0 + inc
-//     let l = (wrap1 curr)
-//     return! l
-// }
+let counterAlt (seed:float) (inc:float) = 
+    seed -=> fun last -> loop {
+        let value = last + inc
+        return {out=value; feedback=value}
+}
 
 let toggle seed =
     let f prev = if prev

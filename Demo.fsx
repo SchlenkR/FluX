@@ -45,9 +45,9 @@ loop {
     // get environment
     let! e = env()
     let! v =
-        if (e.samplePos / e.sampleRate) % 1.0 > 0.5 
-        then tri 2000.0 
-        else sin 2000.0
+        match (e.samplePos / e.sampleRate) % 1.0 > 0.5 with
+        | true -> tri 2000.0 
+        | false -> sin 2000.0
     return v
 }
 |> playSync 5.0<s>
@@ -59,4 +59,11 @@ loop {
     return { out=current; feedback=current }
 }
 |> toList 5
+|> List.iter (printfn "%f")
+
+loop {
+    let! x = counterAlt 0.0 1.0
+    return x
+}
+|> toList 20
 |> List.iter (printfn "%f")

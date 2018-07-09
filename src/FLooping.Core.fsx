@@ -51,13 +51,6 @@ let (-=>) seed (f: 'a -> L<FeedbackResult<'a, 'v>,'s,'r>) =
     Lifting functions  
 *)
 
-// TODO: seems wrong...
-// /// Lifts a function who's value is fed into the next cycle as state.
-// let liftV (f:('v * 's) -> 'r -> 'v) =
-//     fun p r ->
-//         let fVal = f p r
-//         {value=fVal; state=fVal}
-
 /// Lifts a function that doesn't use global reader state.
 let liftR (f:'s -> StatefulResult<'v,'s>) =
     fun p r -> f p
