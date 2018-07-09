@@ -1,89 +1,133 @@
 ﻿#load @"FLooping.Core.fsx"
 
 open System
+open System.Threading
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 open FLooping.Core
 
-open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 
-// Helper
-let private pi = Math.PI
-let private pi2 = 2.0 * pi
-
-
-type Env = {
-    samplePos: float;
-    sampleRate: float;
-}
-
-let toSeconds (env:Env) = (env.samplePos / env.sampleRate) * 1.0<s>
-
-let env() = L(fun p (r:Env) -> {value=r; state=()})
+[<AutoOpen>]
+module Math =
+    let pi = Math.PI
+    let pi2 = 2.0 * pi
 
 
+[<AutoOpen>]
+module AudioEnvironment =
 
-let counter (seed:float) (inc:float) =
-    let f prev = prev + inc
-    let lifted = liftRV f 
-    lifted |> liftSeed seed |> L
+    type Env = {
+        samplePos: int;
+        sampleRate: int;
+    }
 
-let counterAlt (seed:float) (inc:float) = 
-    seed -=> fun last -> loop {
-        let value = last + inc
-        return {out=value; feedback=value}
-}
+    // let toSeconds (env:Env) = (env.samplePos / env.sampleRate) * 1.0<s>
 
-let toggle seed =
-    let f prev = if prev
-                 then {value=0.0; state=false}
-                 else {value=1.0; state=true}
-    liftR f |> liftSeed seed |> L
+    let env() = L(fun p (r:Env) -> {value=r; state=()})
 
-let noise() =
-    let f (prev:Random) =
-        let v = prev.NextDouble()
-        {value=v; state=prev}
-    liftR f |> liftSeed (new Random()) |> L
 
-// TODO
-// static calculation result in strange effects when modulating :D
-//let sin (frq:float<Hz>) (phase:float<Deg>) =
-//    let f (env:Env) = 
-//        let rad = env.samplePos / env.sampleRate
-//        Math.Sin(rad * pi2 * (float frq))
-//    build (lift_s f) ()
-    
-let private osc (frq:float) f =
-    let f angle (env:Env) =
-        let newAngle = (angle + pi2 * frq / env.sampleRate) % pi2
-        //let trimmedAngle = 
-        //    if newAngle > pi2 
-        //    then newAngle - pi2
-        //    else newAngle
-        {value=f newAngle; state=newAngle}
-    f |> liftSeed 0.0 |> L
+[<AutoOpen>]
+module Seq =
 
-// TODO: phase
-let sin (frq:float) = osc frq Math.Sin
-let saw (frq:float) = osc frq (fun angle -> 
-    1.0 - (1.0 / pi * angle))
-let tri (frq:float) = osc frq (fun angle ->
-    if angle < pi
-    then -1.0 + (2.0 / pi) * angle
-    else 3.0 - (2.0 / pi) * angle)
-let square (frq:float) = osc frq (fun angle ->
-    if angle < pi then 1.0 else -1.0)
+    let toSequence (loop:L<_,_,Env>) sampleRate =
+        loop
+        |> toIdSequence (fun i -> { samplePos=i; sampleRate=sampleRate })
 
-// TODO: ringBuffer
-// TODO: flipFlop
-// TODO: hysteresis
-// TODO: follower
-// TODO: HP/LP/BP/Comb
-// TODO: ADSR
-// TODO: bitCrusher
-// TODO: chorus
-// TODO: flanger
-// TODO: phaser
-// TODO: reverb
-// TODO: saturator
+    let toAudioSequence (l:L<_,_,_>) = toSequence l 44100
 
-// TODO: Voices
+    let toList count (l:L<_,_,_>) =
+        (toAudioSequence l)
+        |> Seq.take count
+        |> Seq.toList
+
+
+[<AutoOpen>]
+module BuildingBlocks =
+
+    // TODO
+    // static calculation result in strange effects when modulating :D
+    //let sin (frq:float<Hz>) (phase:float<Deg>) =
+    //    let f (env:Env) = 
+    //        let rad = env.samplePos / env.sampleRate
+    //        Math.Sin(rad * pi2 * (float frq))
+    //    build (lift_s f) ()
+        
+    let private osc (frq:float) f =
+        let f angle (env:Env) =
+            let newAngle = (angle + pi2 * frq / (float env.sampleRate)) % pi2
+            {value=f newAngle; state=newAngle}
+        f |> liftSeed 0.0 |> L
+
+    // TODO: phase
+    let sin (frq:float) = osc frq Math.Sin
+    let saw (frq:float) = osc frq (fun angle ->
+        1.0 - (1.0 / pi * angle))
+    let tri (frq:float) = osc frq (fun angle ->
+        if angle < pi
+        then -1.0 + (2.0 / pi) * angle
+        else 3.0 - (2.0 / pi) * angle)
+    let square (frq:float) = osc frq (fun angle ->
+        if angle < pi then 1.0 else -1.0)
+
+    // TODO: ringBuffer
+    // TODO: flipFlop
+    // TODO: hysteresis
+    // TODO: follower
+    // TODO: HP/LP/BP/Comb
+    // TODO: ADSR
+    // TODO: bitCrusher
+    // TODO: chorus
+    // TODO: flanger
+    // TODO: phaser
+    // TODO: reverb
+    // TODO: saturator
+
+    // TODO: Voices
+
+
+[<AutoOpen>]
+module Analysis =
+
+    let measureSeq (time:TimeSpan) (s:seq<_>) =
+        let enumerator = s.GetEnumerator()
+        let mutable count = 0
+        let mutable run = true
+        let proc = fun _ ->
+            while run do
+                count <- count + 1
+                enumerator.MoveNext() |> ignore
+                enumerator.Current |> ignore
+                ()
+        let thread = new Thread (ThreadStart proc)
+        thread.Start()
+        
+        Thread.Sleep time
+        run <- false
+
+        count
+
+    // let measureSeq (time:TimeSpan) (s:seq<_>) =
+    //     let startTime = DateTime.Now
+    //     let enumerator = s.GetEnumerator()
+    //     let mutable evaluations = 0
+    //     while (DateTime.Now - startTime) < time do
+    //         let max = 10000
+    //         for _ in 1..max do
+    //             enumerator.MoveNext() |> ignore
+    //             enumerator.Current |> ignore
+    //             ()
+    //         evaluations <- evaluations + max
+    //     (float evaluations) / time.TotalSeconds
+
+    let measure (time:TimeSpan) (l:L<_,_,_>) =
+        let s = (toAudioSequence l)
+        measureSeq time s
+
+    // type Measurable<'a,'b,'c> =
+    //     | S of seq<'a>
+    //     | L of L<'a,'b,'c>
+
+    let compare (time:TimeSpan) (ls:seq<_> list) =
+        let measured = ls |> List.map (fun l -> measureSeq time l)
+        match measured with
+        | [] -> []
+        | h::t -> (h,1.0) :: (t |> List.map (fun x -> (x,(float x) / (float h))))

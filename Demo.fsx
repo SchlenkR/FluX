@@ -4,7 +4,7 @@ open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 
 open FLooping.Core
 open FLooping.Audio
-open FLooping.Audio.IO
+open FLooping.Audio.Playback
 
 
 ///
