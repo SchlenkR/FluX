@@ -45,7 +45,7 @@ loop {
     // get environment
     let! e = env()
     let! v =
-        match (e.samplePos / e.sampleRate) % 1.0 > 0.5 with
+        match (float e.samplePos / float e.sampleRate) % 1.0 > 0.5 with
         | true -> tri 2000.0 
         | false -> sin 2000.0
     return v

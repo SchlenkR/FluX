@@ -1,7 +1,6 @@
 ﻿#load @"../src/FLooping.fsx"
 
 open System
-
 open FLooping.Core
 open FLooping.Audio
 
@@ -10,6 +9,7 @@ loop {
     let! x = counter 0.0 1.0
     return x
 }
+|> toIdSequence
 |> measure (TimeSpan.FromSeconds 1.0)
 
 

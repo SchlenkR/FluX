@@ -30,7 +30,7 @@ module Seq =
 
     let toSequence (loop:L<_,_,Env>) sampleRate =
         loop
-        |> toIdSequence (fun i -> { samplePos=i; sampleRate=sampleRate })
+        |> toReaderSequence (fun i -> { samplePos=i; sampleRate=sampleRate })
 
     let toAudioSequence (l:L<_,_,_>) = toSequence l 44100
 
@@ -41,7 +41,7 @@ module Seq =
 
 
 [<AutoOpen>]
-module BuildingBlocks =
+module Oscillators =
 
     // TODO
     // static calculation result in strange effects when modulating :D
@@ -83,51 +83,3 @@ module BuildingBlocks =
 
     // TODO: Voices
 
-
-[<AutoOpen>]
-module Analysis =
-
-    let measureSeq (time:TimeSpan) (s:seq<_>) =
-        let enumerator = s.GetEnumerator()
-        let mutable count = 0
-        let mutable run = true
-        let proc = fun _ ->
-            while run do
-                count <- count + 1
-                enumerator.MoveNext() |> ignore
-                enumerator.Current |> ignore
-                ()
-        let thread = new Thread (ThreadStart proc)
-        thread.Start()
-        
-        Thread.Sleep time
-        run <- false
-
-        count
-
-    // let measureSeq (time:TimeSpan) (s:seq<_>) =
-    //     let startTime = DateTime.Now
-    //     let enumerator = s.GetEnumerator()
-    //     let mutable evaluations = 0
-    //     while (DateTime.Now - startTime) < time do
-    //         let max = 10000
-    //         for _ in 1..max do
-    //             enumerator.MoveNext() |> ignore
-    //             enumerator.Current |> ignore
-    //             ()
-    //         evaluations <- evaluations + max
-    //     (float evaluations) / time.TotalSeconds
-
-    let measure (time:TimeSpan) (l:L<_,_,_>) =
-        let s = (toAudioSequence l)
-        measureSeq time s
-
-    // type Measurable<'a,'b,'c> =
-    //     | S of seq<'a>
-    //     | L of L<'a,'b,'c>
-
-    let compare (time:TimeSpan) (ls:seq<_> list) =
-        let measured = ls |> List.map (fun l -> measureSeq time l)
-        match measured with
-        | [] -> []
-        | h::t -> (h,1.0) :: (t |> List.map (fun x -> (x,(float x) / (float h))))
