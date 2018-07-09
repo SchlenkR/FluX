@@ -61,9 +61,13 @@ loop {
 |> toList 5
 |> List.iter (printfn "%f")
 
+
+// noise with low pass filter
 loop {
-    let! x = counterAlt 0.0 1.0
-    return x
+    let! n = noise()
+    let! f = lp n {q=1.0; frq=3000.0; gainDb=0.0}
+    return f
 }
-|> toList 20
-|> List.iter (printfn "%f")
+|> playSync 3.0<s>
+// |> toList 20
+// |> List.iter (printfn "%f")

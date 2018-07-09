@@ -83,3 +83,63 @@ module Oscillators =
 
     // TODO: Voices
 
+
+[<AutoOpen>]
+module Filters =
+
+    type BiQuadCoeffs = {
+        a0: float;
+        a1: float;
+        a2: float;
+        b1: float;
+        b2: float;
+        z1: float;
+        z2: float;
+    }
+
+    type BiQuadParams = {
+        gainDb: float;
+        q: float;
+        frq: float;
+    }
+
+    let biQuadCoeffsZero = {a0=0.0; a1=0.0; a2=0.0; b1=0.0; b2=0.0; z1=0.0; z2=0.0}
+
+    let biQuadBase input (filterParams:BiQuadParams) (calcCoeffs:Env->BiQuadCoeffs) =
+        let f p r =
+            // seed: if we are run the first time, use default values for lastParams+lastCoeffs
+            let lastParams,lastCoeffs =
+                match p with
+                | None ->   
+                    (
+                        filterParams,
+                        calcCoeffs r
+                    )
+                | Some t -> t
+            
+            // calc the coeffs new if filter params have changed
+            let coeffs =
+                match lastParams = filterParams with
+                | true -> lastCoeffs
+                | false -> calcCoeffs r
+            
+            let o = input * coeffs.a0 + coeffs.z1
+            let z1 = input * coeffs.a1 + coeffs.z2 - coeffs.b1 * o
+            let z2 = input * coeffs.a2 - coeffs.b2 * o
+            
+            let newCoeffs = { coeffs with z1=z1; z2=z2 }
+
+            {value=o; state=(filterParams,newCoeffs)}
+        L f
+
+    let lp input (p:BiQuadParams) =
+        let calcCoeffs (env:Env) =
+            let k = Math.Tan(pi * p.frq / float env.sampleRate)
+            let norm = 1.0 / (1.0 + k / p.q + k * k)
+            let a0 = k * k * norm
+            let a1 = 2.0 * a0
+            let a2 = a0
+            let b1 = 2.0 * (k * k - 1.0) * norm
+            let b2 = (1.0 - k / p.q + k * k) * norm
+            { biQuadCoeffsZero with a0=a0; a1=a1; a2=a2; b1=b1; b2=b2 }
+        biQuadBase input p calcCoeffs
