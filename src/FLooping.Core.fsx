@@ -6,18 +6,19 @@ type L<'v,'s,'r> =
     | L of ('s option -> 'r -> StatefulResult<'v, 's>)
 let run m = match m with | L x -> x
 
-// [<Struct>]
-// type WrappedState<'a,'b> = 
+[<Struct>]
+type WrappedState<'a,'b> = { mine:'a; other:'b }
 
-let bind (m:L<'a,'sa,'r>) (f:'a -> L<'b,'sb,'r>) : L<'b, ('sa * 'sb), 'r> =
+let bind (m:L<'a,'sa,'r>) (f:'a -> L<'b,'sb,'r>) : L<'b, WrappedState<'sa,'sb>, 'r> =
     let stateFunc localState readerState =
-        let prevAState,prevBState = match localState with
-                                    | None       -> (None, None)
-                                    | Some (a,b) -> (Some a, Some b)
+        let { mine=prevAState; other=prevBState } = 
+            match localState with
+            | None   -> {mine=None; other=None}
+            | Some v -> {mine=Some v.mine; other=Some v.other}
         let a = run m prevAState readerState
         let fRes = f a.value
         let b = run fRes prevBState readerState
-        { value = b.value; state = a.state,b.state }
+        { value = b.value; state = {mine=a.state; other=b.state} }
     L stateFunc
 let ret x = L (fun _ _ -> {value=x; state=()} )
 let retFrom l = l
@@ -37,9 +38,10 @@ type FeedbackResult<'a,'b> = { feedback:'a; out:'b }
 /// Feedback
 let (-=>) seed (f: 'a -> L<FeedbackResult<'a, 'v>,'s,'r>) =
     let f1 = fun prev r ->
-        let myPrev,innerPrev = match prev with
-                                | None            -> seed,None
-                                | Some (my,inner) -> my,inner
+        let myPrev,innerPrev = 
+            match prev with
+            | None            -> seed,None
+            | Some (my,inner) -> my,inner
         let lRes = run (f myPrev) innerPrev r
         let feed = lRes.value
         let innerState = lRes.state
