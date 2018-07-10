@@ -64,9 +64,9 @@ loop {
 
 // noise with low pass filter
 loop {
-    let! frqS = sin 22.0 <!> (fun x -> (x + 1.0) * 3000.0)
+    let! frqS = sin 5.0 <!> (fun x -> (x + 1.0) * 1500.0)
     let! n = noise()
-    let! f = lp n { q=1.0; frq=frqS; gainDb=0.0 }
+    let! f = lp n { lpDef with frq=frqS; }
     return f
 }
 |> playSync 3.0<s>

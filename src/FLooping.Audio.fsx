@@ -83,12 +83,11 @@ module Filters =
     }
 
     type BiQuadParams = {
-        gainDb: float;
         q: float;
         frq: float;
     }
 
-    let biQuadCoeffsZero = {a0=0.0; a1=0.0; a2=0.0; b1=0.0; b2=0.0; z1=0.0; z2=0.0}
+    let biQuadCoeffsZero = { a0=0.0; a1=0.0; a2=0.0; b1=0.0; b2=0.0; z1=0.0; z2=0.0 }
 
     let biQuadBase input (filterParams:BiQuadParams) (calcCoeffs:Env->BiQuadCoeffs) =
         let f p r =
@@ -114,9 +113,10 @@ module Filters =
             
             let newCoeffs = { coeffs with z1=z1; z2=z2 }
 
-            {value=o; state=(filterParams,newCoeffs)}
+            { value=o; state=(filterParams,newCoeffs) }
         L f
 
+    let lpDef = { frq=1000.0; q=1.0 }
     let lp input (p:BiQuadParams) =
         let calcCoeffs (env:Env) =
             let k = Math.Tan(pi * p.frq / float env.sampleRate)
