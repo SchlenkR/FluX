@@ -1,15 +1,12 @@
-﻿#r @"../packages/CSCore/lib/net35-client/cscore.dll"
+﻿#r "./FLooping/bin/Debug/netcoreapp2.0/FLooping.dll"
+#r @"../packages/CSCore/lib/net35-client/cscore.dll"
 
-#load @"FLooping.Core.fsx"
-#load @"FLooping.Audio.fsx"
-
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 open System.Threading
 open CSCore
 open CSCore.SoundOut
 open CSCore.Streams.SampleConverter
-open FLooping.Core
-open FLooping.Audio
-open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
+open FLooping
 
 type private StereoSampleSource<'a> (sequenceFactory: int -> float seq) =
     let channels = 2

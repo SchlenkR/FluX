@@ -1,8 +1,10 @@
-﻿#load @"../src/FLooping.fsx"
+﻿#r "./FLooping/bin/Debug/netcoreapp2.0/FLooping.dll"
+#load "./FLooping.AudioPlayback.fsx"
 
 open System
-open FLooping.Core
-open FLooping.Audio
+open FLooping
+open FLooping.Blocks
+open FLooping.Analysis
 
 
 loop {
