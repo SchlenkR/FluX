@@ -1,3 +1,6 @@
 #load @"FLooping.Core.fsx"
 #load @"FLooping.Audio.fsx"
 #load @"FLooping.Audio.Playback.fsx"
+#load @"FLooping.Blocks.Core.fsx"
+#load @"FLooping.Blocks.Filters.fsx"
+#load @"FLooping.Blocks.Oscillators.fsx"

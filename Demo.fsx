@@ -5,6 +5,9 @@ open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 open FLooping.Core
 open FLooping.Audio
 open FLooping.Audio.Playback
+open FLooping.Blocks.Core
+open FLooping.Blocks.Filters
+open FLooping.Blocks.Oscillators
 
 
 ///

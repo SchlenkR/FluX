@@ -1,5 +1,3 @@
-open System
-open System.Threading
 
 [<AutoOpen>]
 module Monad =
@@ -37,6 +35,10 @@ module Monad =
         member __.ReturnFrom l = retFrom l
 
     let loop = LoopBuilder()
+
+
+    /// Reads the global state that is passed around to every loop function.
+    let read() = L(fun p r -> {value=r; state=()})
 
 
 [<AutoOpen>]
@@ -90,12 +92,6 @@ module Lifting =
             l x r
 
 
-[<AutoOpen>]
-module Helper =
-
-    /// Reads the global state that is passed around to every loop function.
-    let read() = L(fun p r -> {value=r; state=()})
-
 
 [<AutoOpen>]
 module Seq =
@@ -111,81 +107,3 @@ module Seq =
         )
 
     let toIdSequence (l:L<'a,_,_>) : seq<'a> = toReaderSequence id l
-
-
-[<AutoOpen>]
-module BuildingBlocks =
-
-    /// Delays a given value by 1 cycle.
-    let delay seed current =
-        let f prev = {value=prev; state=current}
-        liftR f |> liftSeed seed |> L
-
-    let counter (seed:float) (inc:float) =
-        let f prev = prev + inc
-        let lifted = liftRV f 
-        lifted |> liftSeed seed |> L
-
-    let counterAlt (seed:float) (inc:float) = 
-        seed -=> fun last -> loop {
-            let value = last + inc
-            return {out=value; feedback=value}
-    }
-
-    let toggle seed =
-        let f prev = if prev
-                     then {value=0.0; state=false}
-                     else {value=1.0; state=true}
-        liftR f |> liftSeed seed |> L
-
-    let noise() =
-        let f (prev:Random) =
-            let v = prev.NextDouble()
-            {value=v; state=prev}
-        liftR f |> liftSeed (new Random()) |> L
-
-
-
-[<AutoOpen>]
-module Analysis =
-
-    let measure (time:TimeSpan) (s:seq<_>) =
-        let enumerator = s.GetEnumerator()
-        let mutable count = 0
-        let mutable run = true
-        let proc = fun _ ->
-            while run do
-                count <- count + 1
-                enumerator.MoveNext() |> ignore
-                enumerator.Current |> ignore
-                ()
-        let thread = new Thread (ThreadStart proc)
-        thread.Start()
-        
-        Thread.Sleep time
-        run <- false
-
-        count
-
-    // let measureSeq (time:TimeSpan) (s:seq<_>) =
-    //     let startTime = DateTime.Now
-    //     let enumerator = s.GetEnumerator()
-    //     let mutable evaluations = 0
-    //     while (DateTime.Now - startTime) < time do
-    //         let max = 10000
-    //         for _ in 1..max do
-    //             enumerator.MoveNext() |> ignore
-    //             enumerator.Current |> ignore
-    //             ()
-    //         evaluations <- evaluations + max
-    //     (float evaluations) / time.TotalSeconds
-
-    // type Measurable<'a,'b,'c> =
-    //     | S of seq<'a>
-    //     | L of L<'a,'b,'c>
-
-    let compare (time:TimeSpan) (ls:seq<_> list) =
-        let measured = ls |> List.map (fun l -> measure time l)
-        match measured with
-        | [] -> []
-        | h::t -> (h,1.0) :: (t |> List.map (fun x -> (x,(float x) / (float h))))
