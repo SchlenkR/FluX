@@ -22,3 +22,4 @@ Flaws
     * saturator
 
 * Voices (concept)
+* Control rate (for LFOs)

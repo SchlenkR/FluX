@@ -66,7 +66,7 @@ loop {
 loop {
     let! frqS = sin 5.0 <!> (fun x -> (x + 1.0) * 1500.0)
     let! n = noise()
-    let! f = lp n { lpDef with frq=frqS; }
+    let! f = lowPass n { lowPassDef with frq=frqS; }
     return f
 }
 |> playSync 3.0<s>

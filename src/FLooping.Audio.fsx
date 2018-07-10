@@ -85,9 +85,15 @@ module Filters =
     type BiQuadParams = {
         q: float;
         frq: float;
+        gain: float;
     }
 
     let biQuadCoeffsZero = { a0=0.0; a1=0.0; a2=0.0; b1=0.0; b2=0.0; z1=0.0; z2=0.0 }
+
+    (*
+        These implementations are based on http://www.earlevel.com/main/2011/01/02/biquad-formulas/
+        and on https://raw.githubusercontent.com/filoe/cscore/master/CSCore/DSP
+    *)
 
     let biQuadBase input (filterParams:BiQuadParams) (calcCoeffs:Env->BiQuadCoeffs) =
         let f p r =
@@ -116,8 +122,8 @@ module Filters =
             { value=o; state=(filterParams,newCoeffs) }
         L f
 
-    let lpDef = { frq=1000.0; q=1.0 }
-    let lp input (p:BiQuadParams) =
+    let lowPassDef = { frq=1000.0; q=1.0; gain=0.0 }
+    let lowPass input (p:BiQuadParams) =
         let calcCoeffs (env:Env) =
             let k = Math.Tan(pi * p.frq / float env.sampleRate)
             let norm = 1.0 / (1.0 + k / p.q + k * k)
@@ -128,3 +134,44 @@ module Filters =
             let b2 = (1.0 - k / p.q + k * k) * norm
             { biQuadCoeffsZero with a0=a0; a1=a1; a2=a2; b1=b1; b2=b2 }
         biQuadBase input p calcCoeffs
+
+    let bandPassDef = { frq=1000.0; q=1.0; gain=0.0 }
+    let bandPass input (p:BiQuadParams) =
+        let calcCoeffs (env:Env) =
+            let k = Math.Tan(pi * p.frq / float env.sampleRate)
+            let norm = 1.0 / (1.0 + k / p.q + k * k)
+            let a0 = k / p.q * norm
+            let a1 = 0.0
+            let a2 = -a0
+            let b1 = 2.0 * (k * k - 1.0) * norm
+            let b2 = (1.0 - k / p.q + k * k) * norm
+            { biQuadCoeffsZero with a0=a0; a1=a1; a2=a2; b1=b1; b2=b2 }
+        biQuadBase input p calcCoeffs
+
+    // let hishShelfDef = { frq=1000.0; q=1.0; gain=0.0 }
+    // let highShelf input (p:BiQuadParams) =
+    //     let calcCoeffs (env:Env) =
+    //         let sqrt2 = 1.4142135623730951;
+    //         double k = Math.Tan(Math.PI * Frequency / SampleRate);
+    //         double v = Math.Pow(10, Math.Abs(GainDB) / 20.0);
+    //         double norm;
+    //         if (GainDB >= 0)
+    //         {    // boost
+    //             norm = 1 / (1 + sqrt2 * k + k * k);
+    //             A0 = (v + Math.Sqrt(2 * v) * k + k * k) * norm;
+    //             A1 = 2 * (k * k - v) * norm;
+    //             A2 = (v - Math.Sqrt(2 * v) * k + k * k) * norm;
+    //             B1 = 2 * (k * k - 1) * norm;
+    //             B2 = (1 - sqrt2 * k + k * k) * norm;
+    //         }
+    //         else
+    //         {    // cut
+    //             norm = 1 / (v + Math.Sqrt(2 * v) * k + k * k);
+    //             A0 = (1 + sqrt2 * k + k * k) * norm;
+    //             A1 = 2 * (k * k - 1) * norm;
+    //             A2 = (1 - sqrt2 * k + k * k) * norm;
+    //             B1 = 2 * (k * k - v) * norm;
+    //             B2 = (v - Math.Sqrt(2 * v) * k + k * k) * norm;
+    //         }
+    //         { biQuadCoeffsZero with a0=a0; a1=a1; a2=a2; b1=b1; b2=b2 }
+    //     biQuadBase input p calcCoeffs
