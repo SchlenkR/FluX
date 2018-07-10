@@ -13,17 +13,17 @@ module AudioEnvironment =
     let env() = L(fun p (r:Env) -> {value=r; state=()})
 
 
-[<AutoOpen>]
-module SeqAudio =
+[<RequireQualifiedAccess>]
+module Audio =
 
-    let toSequence (loop:L<_,_,Env>) sampleRate =
+    let toSequence1 (loop:L<_,_,Env>) sampleRate =
         loop
-        |> toReaderSequence (fun i -> { samplePos=i; sampleRate=sampleRate })
+        |> FLooping.Seq.toSequence (fun i -> {samplePos=i; sampleRate=sampleRate})
 
-    let toAudioSequence (l:L<_,_,_>) = toSequence l 44100
+    let toSequence (l:L<_,_,_>) = toSequence1 l 44100
 
     let toList count (l:L<_,_,_>) =
-        (toAudioSequence l)
+        (toSequence l)
         |> Seq.take count
         |> Seq.toList
 

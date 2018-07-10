@@ -4,7 +4,7 @@ open System
 open FLooping
 
 [<AutoOpen>]
-module Core =
+module Base =
 
     /// Delays a given value by 1 cycle.
     let delay seed current =
@@ -17,7 +17,7 @@ module Core =
         lifted |> liftSeed seed |> L
 
     let counterAlt (seed:float) (inc:float) = 
-        seed -=> fun last -> loop {
+        seed =-> fun last -> loop {
             let value = last + inc
             return {out=value; feedback=value}
     }

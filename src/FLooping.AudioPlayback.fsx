@@ -38,7 +38,7 @@ let playSync (duration:float<s>) (l:L<float,'a,Env>) =
     // TODO: Usage of newer backend better?
     use waveOut = new DirectSoundOut(latencyInMs, ThreadPriority.AboveNormal)
 
-    let loopingSequence = toSequence l
+    let loopingSequence = FLooping.Audio.toSequence1 l
     let sampleSource = new StereoSampleSource<_>(loopingSequence)
 
     waveOut.Initialize(new SampleToIeeeFloat32(sampleSource));

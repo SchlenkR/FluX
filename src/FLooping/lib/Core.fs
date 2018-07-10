@@ -4,16 +4,16 @@ namespace FLooping
 module Monad =
 
     [<Struct>]
-    type StatefulResult<'a,'b> = { value: 'a; state: 'b }
+    type Res<'a,'b> = { value: 'a; state: 'b }
 
     type L<'v,'s,'r> =
-        | L of ('s option -> 'r -> StatefulResult<'v, 's>)
+        | L of ('s option -> 'r -> Res<'v, 's>)
     let run m = match m with | L x -> x
 
     [<Struct>]
-    type WrappedState<'a,'b> = { mine:'a; other:'b }
+    type S<'a,'b> = { mine:'a; other:'b }
 
-    let bind (m:L<'a,'sa,'r>) (f:'a -> L<'b,'sb,'r>) : L<'b, WrappedState<'sa,'sb>, 'r> =
+    let bind (m:L<'a,'sa,'r>) (f:'a -> L<'b,'sb,'r>) : L<'b, S<'sa,'sb>, 'r> =
         let stateFunc localState readerState =
             let { mine=prevAState; other=prevBState } = 
                 match localState with
@@ -46,20 +46,24 @@ module Monad =
 module Feedback =
 
     [<Struct>]
-    type FeedbackResult<'a,'b> = { feedback:'a; out:'b }
+    type F<'a,'b> = { feedback:'a; out:'b }
 
-    /// Feedback
-    let (-=>) seed (f: 'a -> L<FeedbackResult<'a, 'v>,'s,'r>) =
+    /// Feedback with reader state
+    let (=+>) seed (f:'a -> 'r -> L<F<'a, 'v>,'s,'r>) =
         let f1 = fun prev r ->
             let myPrev,innerPrev = 
                 match prev with
                 | None            -> seed,None
                 | Some (my,inner) -> my,inner
-            let lRes = run (f myPrev) innerPrev r
+            let lRes = run (f myPrev r) innerPrev r
             let feed = lRes.value
             let innerState = lRes.state
             { value = feed.out; state = feed.feedback,Some innerState }
         L f1
+
+    /// Feedback
+    let (=->) seed (f:'a -> L<F<'a, 'v>,'s,'r>) = 
+        (=+>) seed (fun p _ -> f p)
 
     let map (l:L<'v,'s,'r>) (f:'v->'x) : L<'x,'s,'r> =
         let f1 = fun p r ->
@@ -74,7 +78,7 @@ module Feedback =
 module Lifting =
 
     /// Lifts a function that doesn't use global reader state.
-    let liftR (f:'s -> StatefulResult<'v,'s>) =
+    let liftR (f:'s -> Res<'v,'s>) =
         fun p r -> f p
 
     /// Lifts a function that doesn't use global reader state
@@ -92,13 +96,12 @@ module Lifting =
                     | None -> seed
             l x r
 
-
-[<AutoOpen>]
+[<RequireQualifiedAccess>]
 module Seq =
 
     /// Converts a looping monad into a sequence.
     /// The getReaderState function is called for each evaluation.
-    let toReaderSequence getReaderState (l:L<_,_,_>) =
+    let toSequence getReaderState (l:L<_,_,_>) =
         let mutable lastState : 'a option = None
         Seq.initInfinite (fun i ->
             let res = (run l) lastState (getReaderState i)
@@ -106,4 +109,4 @@ module Seq =
             res.value
         )
 
-    let toIdSequence (l:L<'a,_,_>) : seq<'a> = toReaderSequence id l
+    let toSequence1 (l:L<'a,_,_>) : seq<'a> = toSequence id l
