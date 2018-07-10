@@ -1,2 +1,8 @@
 source https://www.nuget.org/api/v2
 nuget CSCore
+nuget FSharp.Core
+
+group Build
+source https://www.nuget.org/api/v2
+
+nuget FAKE

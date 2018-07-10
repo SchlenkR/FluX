@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="lib/Math.fs" />
+    <Compile Include="lib/Core.fs" />
+    <Compile Include="lib/Audio.fs" />
+    <Compile Include="lib/Analysis.fs" />
+    <Compile Include="lib/Blocks/Core.fs" />
+    <Compile Include="lib/Blocks/Oscillators.fs" />
+    <Compile Include="lib/Blocks/Filters.fs" />
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>
