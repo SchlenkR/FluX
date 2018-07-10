@@ -64,10 +64,9 @@ loop {
 
 // noise with low pass filter
 loop {
+    let! frqS = sin 22.0 <!> (fun x -> (x + 1.0) * 3000.0)
     let! n = noise()
-    let! f = lp n {q=1.0; frq=3000.0; gainDb=0.0}
+    let! f = lp n { q=1.0; frq=frqS; gainDb=0.0 }
     return f
 }
 |> playSync 3.0<s>
-// |> toList 20
-// |> List.iter (printfn "%f")

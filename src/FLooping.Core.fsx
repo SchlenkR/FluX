@@ -58,13 +58,17 @@ module Feedback =
             { value = feed.out; state = feed.feedback,Some innerState }
         L f1
 
+    let map (l:L<'v,'s,'r>) (f:'v->'x) : L<'x,'s,'r> =
+        let f1 = fun p r ->
+            let res = run l p r
+            let mappedRes = f res.value
+            { value=mappedRes; state=res.state }
+        L f1
+    let (<!>) = map
+
 
 [<AutoOpen>]
 module Lifting =
-
-    (*
-        Lifting functions  
-    *)
 
     /// Lifts a function that doesn't use global reader state.
     let liftR (f:'s -> StatefulResult<'v,'s>) =

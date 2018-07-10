@@ -68,21 +68,6 @@ module Oscillators =
     let square (frq:float) = osc frq (fun angle ->
         if angle < pi then 1.0 else -1.0)
 
-    // TODO: ringBuffer
-    // TODO: flipFlop
-    // TODO: hysteresis
-    // TODO: follower
-    // TODO: HP/LP/BP/Comb
-    // TODO: ADSR
-    // TODO: bitCrusher
-    // TODO: chorus
-    // TODO: flanger
-    // TODO: phaser
-    // TODO: reverb
-    // TODO: saturator
-
-    // TODO: Voices
-
 
 [<AutoOpen>]
 module Filters =
