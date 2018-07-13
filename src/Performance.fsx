@@ -17,12 +17,12 @@ loop {
 
 // TODO: Wow - second alternative is 2 - 3 times faster than the first one! Why?
 [
-    FLooping.Audio.toSequence <| loop {
+    Convert.toSeqOrd <| loop {
         let! x = counter 0.0 1.0
         return x
     };
     
-    FLooping.Audio.toSequence <| loop {
+    Convert.toSeqOrd <| loop {
         let! x = counterAlt 0.0 1.0
         return x
     };

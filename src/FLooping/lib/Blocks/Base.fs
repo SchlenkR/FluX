@@ -8,28 +8,56 @@ module Base =
 
     /// Delays a given value by 1 cycle.
     let delay seed current =
-        let f prev = {value=prev; state=current}
-        liftR f |> liftSeed seed |> L
+        let f p r = {value=p; state=current}
+        f |> liftSeed seed |> L
+
+    // let delayBy seed samples =
+    //     fun p _ =
+
+    let flp seed input =
+        let f p r =
+            let res = 
+                match p,input with
+                | false,true -> 1.0
+                | _ -> 0.0
+            {value=res; state=input}
+        f |> liftSeed seed |> L
+
+    let fln seed input =
+        let f p r =
+            let res = 
+                match p,input with
+                | true,false -> 1.0
+                | _ -> 0.0
+            {value=res; state=input}
+        f |> liftSeed seed |> L
+
+    let preserve factory =
+        let f p r =
+            let instance =
+                match p with
+                | None -> factory()
+                | Some x -> x
+            {value=instance; state=instance}
+        L f
 
     let counter (seed:float) (inc:float) =
-        let f prev = prev + inc
-        let lifted = liftRV f 
-        lifted |> liftSeed seed |> L
+        let f p r = 
+            let res = p + inc
+            {value=res; state=res}
+        f |> liftSeed seed |> L
 
+    // TODO
     let counterAlt (seed:float) (inc:float) = 
         seed =-> fun last -> loop {
             let value = last + inc
             return {out=value; feedback=value}
     }
 
-    let toggle seed =
-        let f prev = if prev
-                     then {value=0.0; state=false}
-                     else {value=1.0; state=true}
-        liftR f |> liftSeed seed |> L
+    // let toggle seed =
+    //     let f p _ = 
+    //         match p with
+    //         | true -> {value=0.0; state=false}
+    //         | false -> {value=1.0; state=true}
+    //     f |> liftSeed seed |> L
 
-    let noise() =
-        let f (prev:Random) =
-            let v = prev.NextDouble()
-            {value=v; state=prev}
-        liftR f |> liftSeed (new Random()) |> L

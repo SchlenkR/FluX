@@ -38,8 +38,19 @@ module Monad =
     let loop = LoopBuilder()
 
 
+[<AutoOpen>]
+module Helper =
+
     /// Reads the global state that is passed around to every loop function.
     let read() = L(fun p r -> {value=r; state=()})
+
+    /// Lifts a function with an initial value.
+    let liftSeed seed l =
+        fun p r ->
+            let x = match p with
+                    | Some previousState -> previousState
+                    | None -> seed
+            l x r
 
 
 [<AutoOpen>]
@@ -49,7 +60,7 @@ module Feedback =
     type F<'a,'b> = { feedback:'a; out:'b }
 
     /// Feedback with reader state
-    let (=+>) seed (f:'a -> 'r -> L<F<'a, 'v>,'s,'r>) =
+    let (=+>) seed (f:'a -> 'r -> L<F<'a,'v>,'s,'r>) =
         let f1 = fun prev r ->
             let myPrev,innerPrev = 
                 match prev with
@@ -72,26 +83,3 @@ module Feedback =
             { value=mappedRes; state=res.state }
         L f1
     let (<!>) = map
-
-
-[<AutoOpen>]
-module Lifting =
-
-    /// Lifts a function that doesn't use global reader state.
-    let liftR (f:'s -> Res<'v,'s>) =
-        fun p r -> f p
-
-    /// Lifts a function that doesn't use global reader state
-    /// and who's value is fed into the next cycle as state.
-    let liftRV (f:'v -> 'v) =
-        fun p r ->
-            let fVal = f p
-            {value=fVal; state=fVal}
-
-    /// Lifts a function with an initial value.
-    let liftSeed seed l =
-        fun p r ->
-            let x = match p with
-                    | Some previousState -> previousState
-                    | None -> seed
-            l x r

@@ -10,8 +10,8 @@
     <Compile Include="lib/Analysis.fs" />
     <Compile Include="lib/SeqExtensions.fs" />
     <Compile Include="lib/Blocks/Base.fs" />
-    <Compile Include="lib/Blocks/Oscillators.fs" />
-    <Compile Include="lib/Blocks/Filters.fs" />
+    <Compile Include="lib/Blocks/Osc.fs" />
+    <Compile Include="lib/Blocks/Filter.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

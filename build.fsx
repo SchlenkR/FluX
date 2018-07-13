@@ -72,8 +72,8 @@ Target "Build" (fun _ ->
 // --------------------------------------------------------------------------------------
 
 "Clean"
-  ==> "InstallDotNetCLI"
-  ==> "Restore"
+//   ==> "InstallDotNetCLI"
+//   ==> "Restore"
   ==> "Build"
 
 RunTargetOrDefault "Build"

@@ -1,6 +1,4 @@
-#if !INTERACTIVE
 namespace FLooping
-#endif
 
 open System
 open System.Threading

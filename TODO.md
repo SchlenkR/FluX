@@ -26,3 +26,4 @@ Flaws
 * Voices (concept)
 * Control rate (for LFOs)
 * don't auto-open modules. Use extensions instead?
+* Output folder / dist and checkin

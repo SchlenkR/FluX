@@ -1,7 +1,6 @@
 namespace FLooping
 
-[<AutoOpen>]
-module Conversion =
+module Convert =
 
     /// Converts a looping monad into a sequence.
     /// The getReaderState function is called for each evaluation.
@@ -15,14 +14,14 @@ module Conversion =
 
     let toSeqOrd (l:L<'a,_,_>) : seq<'a> = toSeq id l
 
-    let toSeqEnv1 (loop:L<_,_,Env>) sampleRate =
+    let toSeqEnvSR (loop:L<_,_,Env>) sampleRate =
         loop
         |> toSeq (fun i -> {samplePos=i; sampleRate=sampleRate})
 
-    let toSeqEnv2 (l:L<_,_,_>) = toSeqEnv1 l 44100
+    let toSeqEnv (l:L<_,_,_>) = toSeqEnvSR l 44100
 
-    let toList count (l:L<_,_,_>) =
-        (toSeqOrd l)
+    let toList count (s:seq<_>) =
+        s
         |> Seq.take count
         |> Seq.toList
 

@@ -5,7 +5,13 @@ open FLooping
 open FLooping.Math
 
 [<AutoOpen>]
-module Oscillators =
+module Osc =
+
+    let noise() =
+        let f (p:Random) r =
+            let v = p.NextDouble()
+            {value=v; state=p}
+        f |> liftSeed (new Random()) |> L
 
     // TODO
     // static calculation result in strange effects when modulating :D
