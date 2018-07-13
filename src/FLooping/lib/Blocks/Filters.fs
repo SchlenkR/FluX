@@ -5,8 +5,7 @@ open FLooping
 open FLooping.Math
 
 
-[<AutoOpen>]
-module Filters =
+module Filter =
 
     type BiQuadCoeffs = {
         a0: float;
@@ -24,14 +23,14 @@ module Filters =
         gain: float;
     }
 
-    let biQuadCoeffsZero = { a0=0.0; a1=0.0; a2=0.0; b1=0.0; b2=0.0; z1=0.0; z2=0.0 }
+    let private biQuadCoeffsZero = { a0=0.0; a1=0.0; a2=0.0; b1=0.0; b2=0.0; z1=0.0; z2=0.0 }
 
     (*
         These implementations are based on http://www.earlevel.com/main/2011/01/02/biquad-formulas/
         and on https://raw.githubusercontent.com/filoe/cscore/master/CSCore/DSP
     *)
 
-    let biQuadBase input (filterParams:BiQuadParams) (calcCoeffs:Env->BiQuadCoeffs) =
+    let private biQuadBase input (filterParams:BiQuadParams) (calcCoeffs:Env->BiQuadCoeffs) =
         let f p r =
             // seed: if we are run the first time, use default values for lastParams+lastCoeffs
             let lastParams,lastCoeffs =
@@ -58,6 +57,7 @@ module Filters =
             { value=o; state=(filterParams,newCoeffs) }
         L f
 
+
     let lowPassDef = { frq=1000.0; q=1.0; gain=0.0 }
     let lowPass input (p:BiQuadParams) =
         let calcCoeffs (env:Env) =
@@ -71,6 +71,7 @@ module Filters =
             { biQuadCoeffsZero with a0=a0; a1=a1; a2=a2; b1=b1; b2=b2 }
         biQuadBase input p calcCoeffs
 
+
     let bandPassDef = { frq=1000.0; q=1.0; gain=0.0 }
     let bandPass input (p:BiQuadParams) =
         let calcCoeffs (env:Env) =
@@ -83,6 +84,7 @@ module Filters =
             let b2 = (1.0 - k / p.q + k * k) * norm
             { biQuadCoeffsZero with a0=a0; a1=a1; a2=a2; b1=b1; b2=b2 }
         biQuadBase input p calcCoeffs
+
 
     let highShelfDef = { frq=1000.0; q=1.0; gain=0.0 }
     let highShelf input (p:BiQuadParams) =
@@ -112,6 +114,7 @@ module Filters =
                 }
         biQuadBase input p calcCoeffs
 
+
     let hishPassDef = { frq=1000.0; q=1.0; gain=0.0 }
     let highPass input (p:BiQuadParams) =
         let calcCoeffs (env:Env) =
@@ -124,6 +127,7 @@ module Filters =
             let b2 = (1.0 - k / p.q + k * k) * norm
             { biQuadCoeffsZero with a0=a0; a1=a1; a2=a2; b1=b1; b2=b2 }
         biQuadBase input p calcCoeffs
+
 
     let lowShelfDef = { frq=1000.0; q=1.0; gain=0.0 }
     let lowShelf input (p:BiQuadParams) =
@@ -198,6 +202,4 @@ module Filters =
                     b2 = (1.0 - v / l) * norm
                 }
         biQuadBase input p calcCoeffs
-
-
 

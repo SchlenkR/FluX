@@ -95,18 +95,3 @@ module Lifting =
                     | Some previousState -> previousState
                     | None -> seed
             l x r
-
-[<RequireQualifiedAccess>]
-module Seq =
-
-    /// Converts a looping monad into a sequence.
-    /// The getReaderState function is called for each evaluation.
-    let toSequence getReaderState (l:L<_,_,_>) =
-        let mutable lastState : 'a option = None
-        Seq.initInfinite (fun i ->
-            let res = (run l) lastState (getReaderState i)
-            lastState <- Some res.state
-            res.value
-        )
-
-    let toSequence1 (l:L<'a,_,_>) : seq<'a> = toSequence id l

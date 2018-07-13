@@ -54,7 +54,7 @@ loop {
 
 
 // A feedback loop: Feed the value of a counter back to the next evaluation.
-1.0 -=> fun last -> loop {
+1.0 =-> fun last -> loop {
     let current = last + 0.1
     return { out=current; feedback=current }
 }

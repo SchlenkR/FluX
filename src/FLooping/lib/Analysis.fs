@@ -1,9 +1,12 @@
+#if !INTERACTIVE
 namespace FLooping
+#endif
 
 open System
 open System.Threading
 
 module Analysis =
+
     let measure (time:TimeSpan) (s:seq<_>) =
         let enumerator = s.GetEnumerator()
         let mutable count = 0
