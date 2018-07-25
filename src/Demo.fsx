@@ -18,7 +18,7 @@ loop {
     let! x = Base.counter 0.0 1.0
     return x
 }
-|> Convert.toSeqOrd
+|> Convert.toSeq
 |> Convert.toList 20
 |> List.iter (printfn "%f")
 
@@ -59,7 +59,7 @@ loop {
     let current = last + 0.1
     return {out=current; feedback=current}
 }
-|> Convert.toSeqOrd
+|> Convert.toSeq
 |> Convert.toList 5
 |> List.iter (printfn "%f")
 
@@ -77,9 +77,9 @@ loop {
 // TODO
 loop {
     let! e = env()
-    let! res = flp false true
-    return res
+    let! res = flp false (e.samplePos = 3)
+    return (res,e.samplePos)
 }
-|> Convert.toSeqEnv
-|> Convert.toList 10
-|> List.iter (printfn "%f")
+|> Convert.toSeq
+|> Convert.toList 5
+|> List.iter (printfn "%A")

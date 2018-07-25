@@ -30,19 +30,26 @@ module Monad =
     let retFrom l = l
 
     // computation builder
-    type LoopBuilder() =
+    type LoopBaseBuilder() =
         member __.Bind (m, f) = bind m f
         member __.Return x = ret x
         member __.ReturnFrom l = retFrom l
+    let loopBase = LoopBaseBuilder()
 
-    let loop = LoopBuilder()
+
+    // computation builder
+    type LoopGenBuilder<'a>() =
+        member __.Bind (m:L<_,_,'a>, f) = bind m f
+        member __.Return x = ret x
+        member __.ReturnFrom l = retFrom l
+    let loopGen<'a> = LoopGenBuilder<'a>()
 
 
 [<AutoOpen>]
 module Helper =
 
     /// Reads the global state that is passed around to every loop function.
-    let read() = L(fun p r -> {value=r; state=()})
+    let read() = L(fun p r -> { value=r; state=()} )
 
     /// Lifts a function with an initial value.
     let liftSeed seed l =
