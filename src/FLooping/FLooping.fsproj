@@ -8,7 +8,7 @@
     <Compile Include="lib/Core.fs" />
     <Compile Include="lib/Audio.fs" />
     <Compile Include="lib/Analysis.fs" />
-    <Compile Include="lib/SeqExtensions.fs" />
+    <Compile Include="lib/Convert.fs" />
     <Compile Include="lib/Blocks/Base.fs" />
     <Compile Include="lib/Blocks/Osc.fs" />
     <Compile Include="lib/Blocks/Filter.fs" />

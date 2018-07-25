@@ -79,7 +79,7 @@ module Feedback =
             { value = feed.out; state = feed.feedback,Some innerState }
         L f1
 
-    /// Feedback
+    /// Feedback without reader state
     let (=->) seed (f:'a -> L<F<'a, 'v>,'s,'r>) = 
         (=+>) seed (fun p _ -> f p)
 
@@ -90,3 +90,6 @@ module Feedback =
             { value=mappedRes; state=res.state }
         L f1
     let (<!>) = map
+
+    // Applicative
+    

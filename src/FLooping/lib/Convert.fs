@@ -20,8 +20,13 @@ module Convert =
 
     let toSeq (l:L<_,_,_>) = toSeqSample l 44100
 
-    let toList count (s:seq<_>) =
-        s
+    let toList count l =
+        l
+        |> toSeq
         |> Seq.take count
         |> Seq.toList
 
+    let iter count f l =
+        l
+        |> toList count
+        |> List.iter f

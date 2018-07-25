@@ -18,9 +18,7 @@ loop {
     let! x = Base.counter 0.0 1.0
     return x
 }
-|> Convert.toSeq
-|> Convert.toList 20
-|> List.iter (printfn "%f")
+|> Convert.iter 20 (printfn "%f")
 
 
 // play a sin wave (5kHz) for 5 seconds
@@ -59,11 +57,10 @@ loop {
     let current = last + 0.1
     return {out=current; feedback=current}
 }
-|> Convert.toSeq
-|> Convert.toList 5
-|> List.iter (printfn "%f")
+|> Convert.iter 20 (printfn "%f")
 
 
+// Demo: Map operator
 // noise with low pass filter
 loop {
     let! frqS = Osc.sin 5.0 <!> (fun x -> (x + 1.0) * 1500.0)
@@ -76,10 +73,8 @@ loop {
 
 // TODO
 loop {
-    let! e = env()
+    let! env = read()
     let! res = flp false (e.samplePos = 3)
     return (res,e.samplePos)
 }
-|> Convert.toSeq
-|> Convert.toList 5
-|> List.iter (printfn "%A")
+|> Convert.iter 20 (printfn "%A")
