@@ -1,4 +1,6 @@
-﻿#r "./FLooping/bin/Debug/netcoreapp2.0/FLooping.dll"
+﻿#r "System.Runtime.Extensions"
+#r "./FLooping/bin/Debug/netcoreapp2.0/FLooping.dll"
+
 #load "./FLooping.AudioPlayback.fsx"
 
 open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
@@ -15,7 +17,7 @@ open FLooping.AudioPlayback
 
 // increment a counter by 1, starting with 0 and print it to the output.
 loop {
-    let! x = Base.counter 0.0 1.0
+    let! x = counter 0.0 1.0
     return x
 }
 |> Convert.iter 20 (printfn "%f")
@@ -29,6 +31,8 @@ loop {
 |> playSync 5.0<s>
 
 
+
+
 // modulate the frequence of a sawtooth wave with an LFO (low frequency oscillator)
 loop {
     let! modulator = Osc.sin 5.0
@@ -39,10 +43,29 @@ loop {
 |> playSync 5.0<s>
 
 
+// Alternative: Inline the modulating oscillator
+loop {
+    let amount = 0.05
+    let! s = Osc.saw <*> (Osc.sin 5.0 <!> (fun modulator -> 1000.0 * (1.0 - modulator * amount)))
+    return s
+}
+|> playSync 5.0<s>
+
+
+// Alternative: Inline the modulating oscillator
+loop {
+    let! s = Osc.saw 5.0 .+. Osc.sin 5.0
+    return s
+}
+|> playSync 5.0<s>
+
+
+
+
 // "tatü-tataa": switch the waveform every 1/2 second
 loop {
     // get environment
-    let! e = env()
+    let! e = read()
     let! v =
         match (float e.samplePos / float e.sampleRate) % 1.0 > 0.5 with
         | true -> tri 2000.0 
@@ -53,11 +76,13 @@ loop {
 
 
 // A feedback loop: Feed the value of a counter back to the next evaluation.
-1.0 =-> fun last -> loop {
+1.0 <-> fun last -> loop {
     let current = last + 0.1
     return {out=current; feedback=current}
 }
 |> Convert.iter 20 (printfn "%f")
+
+
 
 
 // Demo: Map operator
@@ -71,10 +96,15 @@ loop {
 |> playSync 3.0<s>
 
 
-// TODO
+
+
+
+// TODO: doc
 loop {
     let! env = read()
-    let! res = flp false (e.samplePos = 3)
-    return (res,e.samplePos)
+    let! res = flp false (env.samplePos = 3)
+    return (res,env.samplePos)
 }
 |> Convert.iter 20 (printfn "%A")
+
+// TODO: verschachtelte Loops / Auslagern in wiederverwendbare Einheiten

@@ -49,7 +49,7 @@ module Base =
 
     // TODO
     let counterAlt (seed:float) (inc:float) = 
-        seed =-> fun last -> loop {
+        seed <-> fun last -> loop {
             let value = last + inc
             return {out=value; feedback=value}
     }

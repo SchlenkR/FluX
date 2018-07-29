@@ -1,7 +1,7 @@
 namespace FLooping
 
 [<AutoOpen>]
-module Monad =
+module Core =
 
     [<Struct>]
     type Res<'a,'b> = { value: 'a; state: 'b }
@@ -59,15 +59,77 @@ module Helper =
                     | None -> seed
             l x r
 
+[<AutoOpen>]
+module Arithmetic =
+
+    let map l f =
+        let f1 = fun p r ->
+            let res = run l p r
+            let mappedRes = f res.value
+            { value=mappedRes; state=res.state }
+        L f1
+    let (<!>) = map
+
+    let (<*>) f l =
+        loopBase {
+            let! r1 = l
+            let! r2 = f r1
+            return r2
+        }
+    
+    // type L<'v,'s,'r> with
+    //     static member (+) (first: L<float,'s,'r>, second: L<float,'s,'r>) : ('v) =
+    //         loopBase {
+    //             let! r1 = first
+    //             let! r2 = second
+    //             return r1 + r2
+    //         }
+
+    let inline private binOpBoth left right f =
+        loopBase {
+            let! r1 = left
+            let! r2 = right
+            return f r1 r2
+        }
+    let inline private binOpLeft left right f =
+        loopBase {
+            let! r1 = left
+            return f r1 right
+        }
+    let inline private binOpRight left right f =
+        loopBase {
+            let! r2 = right
+            return f left r2
+        }
+    let inline (.+.) left right = binOpBoth left right (+)
+    let inline (.+) left right = binOpLeft left right (+)
+    let inline (+.) left right = binOpRight left right (+)
+
+    let inline (.-.) left right = binOpBoth left right (-)
+    let inline (.-) left right = binOpLeft left right (-)
+    let inline (-.) left right = binOpRight left right (-)
+
+    let inline (.*.) left right = binOpBoth left right (+)
+    let inline (.*) left right = binOpLeft left right (*)
+    let inline ( *.) left right = binOpRight left right (*)
+
+    let inline (./.) left right = binOpBoth left right (/)
+    let inline (./) left right = binOpLeft left right (/)
+    let inline (/.) left right = binOpRight left right (/)
+
+    let inline (.^.) left right = binOpBoth left right (fun l r -> System.Math.Pow(l, r))
+    let inline (.^) left right = binOpLeft left right (^^)
+    let inline (^.) left right = binOpRight left right (^^)
+
 
 [<AutoOpen>]
 module Feedback =
 
     [<Struct>]
-    type F<'a,'b> = { feedback:'a; out:'b }
+    type Fbd<'a,'b> = { feedback:'a; out:'b }
 
     /// Feedback with reader state
-    let (=+>) seed (f:'a -> 'r -> L<F<'a,'v>,'s,'r>) =
+    let (<=>) seed (f:'a -> 'r -> L<Fbd<'a,'v>,'s,'r>) =
         let f1 = fun prev r ->
             let myPrev,innerPrev = 
                 match prev with
@@ -80,16 +142,4 @@ module Feedback =
         L f1
 
     /// Feedback without reader state
-    let (=->) seed (f:'a -> L<F<'a, 'v>,'s,'r>) = 
-        (=+>) seed (fun p _ -> f p)
-
-    let map (l:L<'v,'s,'r>) (f:'v->'x) : L<'x,'s,'r> =
-        let f1 = fun p r ->
-            let res = run l p r
-            let mappedRes = f res.value
-            { value=mappedRes; state=res.state }
-        L f1
-    let (<!>) = map
-
-    // Applicative
-    
+    let (<->) seed f = (<=>) seed (fun p _ -> f p)
