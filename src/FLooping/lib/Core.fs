@@ -26,6 +26,7 @@ module Core =
         L stateFunc
     
     let ret x = L (fun _ _ -> {value=x; state=()} )
+    let ($) = ret
     
     let retFrom l = l
 
@@ -44,6 +45,21 @@ module Core =
         member __.ReturnFrom l = retFrom l
     let loopGen<'a> = LoopGenBuilder<'a>()
 
+    let map l f =
+        let f1 = fun p r ->
+            let res = run l p r
+            let mappedRes = f res.value
+            { value=mappedRes; state=res.state }
+        L f1
+    let (<!>) = map
+
+    let (<*>) f l =
+        loopBase {
+            let! r1 = l
+            let! r2 = f r1
+            return r2
+        }
+
 
 [<AutoOpen>]
 module Helper =
@@ -59,48 +75,51 @@ module Helper =
                     | None -> seed
             l x r
 
+
 [<AutoOpen>]
 module Arithmetic =
 
-    let map l f =
-        let f1 = fun p r ->
-            let res = run l p r
-            let mappedRes = f res.value
-            { value=mappedRes; state=res.state }
-        L f1
-    let (<!>) = map
-
-    let (<*>) f l =
-        loopBase {
-            let! r1 = l
-            let! r2 = f r1
-            return r2
-        }
+    open System.Runtime.CompilerServices
     
-    // type L<'v,'s,'r> with
-    //     static member (+) (first: L<float,'s,'r>, second: L<float,'s,'r>) : ('v) =
-    //         loopBase {
-    //             let! r1 = first
-    //             let! r2 = second
-    //             return r1 + r2
-    //         }
-
     let inline private binOpBoth left right f =
         loopBase {
-            let! r1 = left
-            let! r2 = right
-            return f r1 r2
+            let! l = left
+            let! r = right
+            return f l r
         }
     let inline private binOpLeft left right f =
         loopBase {
-            let! r1 = left
-            return f r1 right
+            let! l = left
+            return f l right
         }
     let inline private binOpRight left right f =
         loopBase {
-            let! r2 = right
-            return f left r2
+            let! r = right
+            return f left r
         }
+
+    [<Extension>]
+    type LExtensions() =
+
+        [<Extension>]
+        static member inline (+++) (left, right) =
+            binOpBoth left right (+)
+
+        [<Extension>]
+        static member inline (-) (left, right) =
+            binOpBoth left right (-)
+
+        [<Extension>]
+        static member inline (*) (left, right) =
+            binOpBoth left right (*)
+
+        [<Extension>]
+        static member inline (/) (left, right) =
+            binOpBoth left right (/)
+
+        [<Extension>]
+        static member inline (%) (left, right) =
+            binOpBoth left right (%)
     let inline (.+.) left right = binOpBoth left right (+)
     let inline (.+) left right = binOpLeft left right (+)
     let inline (+.) left right = binOpRight left right (+)

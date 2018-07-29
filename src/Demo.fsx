@@ -43,7 +43,7 @@ loop {
 |> playSync 5.0<s>
 
 
-// Alternative: Inline the modulating oscillator
+// Alternative: Inline the modulating oscillator (<*>) and using map (<!>)
 loop {
     let amount = 0.05
     let! s = Osc.saw <*> (Osc.sin 5.0 <!> (fun modulator -> 1000.0 * (1.0 - modulator * amount)))
@@ -51,15 +51,26 @@ loop {
 }
 |> playSync 5.0<s>
 
-
-// Alternative: Inline the modulating oscillator
+// Alternative: Inline the modulating oscillator (<*>) and using "looping" arithmetic operators
 loop {
-    let! s = Osc.saw 5.0 .+. Osc.sin 5.0
+    let amount = 0.05
+    let! s = Osc.saw <*> (1000.0 *. (1.0 -. Osc.sin 5.0 .* amount))
     return s
 }
 |> playSync 5.0<s>
 
 
+
+// TODO: nice! :)
+open FLooping.Arithmetic
+
+loop {
+    let amount = !0.05
+    let! x = (!100.0) + (!100.0)
+    let! s = Osc.saw <*> (!1000.0 * (!1.0 .-. (Osc.sin 5.0) .*. amount))
+    return s
+}
+|> playSync 5.0<s>
 
 
 // "tatü-tataa": switch the waveform every 1/2 second
