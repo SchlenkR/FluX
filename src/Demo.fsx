@@ -28,7 +28,7 @@ loop {
     let! x = Osc.sin 5000.0
     return x
 }
-|> playSync 5.0<s>
+|> playSync 2.5<s>
 
 
 
@@ -40,37 +40,24 @@ loop {
     let! s = Osc.saw (1000.0 * (1.0 - modulator * amount))
     return s
 }
-|> playSync 5.0<s>
-
+|> playSync 2.5<s>
 
 // Alternative: Inline the modulating oscillator (<*>) and using map (<!>)
 loop {
     let amount = 0.05
-    let! s = Osc.saw <*> (Osc.sin 5.0 <!> (fun modulator -> 1000.0 * (1.0 - modulator * amount)))
+    let! s = !Osc.saw <**> (Osc.sin 5.0 <!> (fun modulator -> 1000.0 * (1.0 - modulator * amount)))
     return s
 }
-|> playSync 5.0<s>
+|> playSync 2.5<s>
 
 // Alternative: Inline the modulating oscillator (<*>) and using "looping" arithmetic operators
 loop {
-    let amount = 0.05
-    let! s = Osc.saw <*> (1000.0 *. (1.0 -. Osc.sin 5.0 .* amount))
-    return s
-}
-|> playSync 5.0<s>
-
-
-
-// TODO: nice! :)
-open FLooping.Arithmetic
-
-loop {
     let amount = !0.05
-    let! x = (!100.0) + (!100.0)
-    let! s = Osc.saw <*> (!1000.0 * (!1.0 .-. (Osc.sin 5.0) .*. amount))
+    let! s = !Osc.saw <**> (!1000.0 * (!1.0 - (Osc.sin 5.0) * amount))
     return s
 }
-|> playSync 5.0<s>
+|> playSync 2.5<s>
+
 
 
 // "tatü-tataa": switch the waveform every 1/2 second
@@ -83,7 +70,8 @@ loop {
         | false -> sin 2000.0
     return v
 }
-|> playSync 5.0<s>
+|> playSync 2.5<s>
+
 
 
 // A feedback loop: Feed the value of a counter back to the next evaluation.
@@ -95,13 +83,12 @@ loop {
 
 
 
-
 // Demo: Map operator
 // noise with low pass filter
+// TODO: { Filter.lowPassDef with frq=frqS; } sieht scheiße aus
 loop {
-    let! frqS = Osc.sin 5.0 <!> (fun x -> (x + 1.0) * 1500.0)
-    let! n = Osc.noise()
-    let! f = Filter.lowPass n { Filter.lowPassDef with frq=frqS; }
+    let! frqS = Osc.sin 5.0 + !1.0 * !1500.0
+    let! f = !Filter.lowPass <*> Osc.noise() <**> !{ Filter.lowPassDef with frq=frqS; }
     return f
 }
 |> playSync 3.0<s>
@@ -119,3 +106,10 @@ loop {
 |> Convert.iter 20 (printfn "%A")
 
 // TODO: verschachtelte Loops / Auslagern in wiederverwendbare Einheiten
+
+// TODO: In Demo einarbeiten
+loop {
+    let! c = !counter <*> (!0.0) <**> (!1.0)
+    return c
+}
+|> Convert.iter 20 (printfn "%f")

@@ -25,8 +25,8 @@ module Core =
             { value = b.value; state = {mine=a.state; other=b.state} }
         L stateFunc
     
-    let ret x = L (fun _ _ -> {value=x; state=()} )
-    let ($) = ret
+    let ret x = L (fun _ _ -> {value=x; state=()})
+    let (!) = ret
     
     let retFrom l = l
 
@@ -45,20 +45,50 @@ module Core =
         member __.ReturnFrom l = retFrom l
     let loopGen<'a> = LoopGenBuilder<'a>()
 
+    /// TODO: Docu
     let map l f =
         let f1 = fun p r ->
             let res = run l p r
             let mappedRes = f res.value
             { value=mappedRes; state=res.state }
         L f1
+    /// TODO: Docu
     let (<!>) = map
 
-    let (<*>) f l =
+    /// TODO: Docu (applicative)
+    let (<*>) (f:L<'f,_,'r>) (l:L<'v1,_,'r>) : L<'v2,_,'r> =
         loopBase {
-            let! r1 = l
-            let! r2 = f r1
-            return r2
+            let! resL = l
+            let! innerF = f
+            let result = innerF resL
+            return result
         }
+    let (<**>) (f:L<'f,_,'r>) (l:L<'v1,_,'r>) : L<'v2,_,'r> =
+        loopBase {
+            let! resL = l
+            let! innerF = f
+            let result = innerF resL
+            return! result
+        }
+    
+    let inline private binOpBoth left right f =
+        loopBase {
+            let! l = left
+            let! r = right
+            return f l r
+        }
+
+    type L<'v,'s,'r> with
+        static member inline (+) (left, right) =
+            binOpBoth left right (+)
+        static member inline (-) (left, right) =
+            binOpBoth left right (-)
+        static member inline (*) (left, right) =
+            binOpBoth left right (*)
+        static member inline (/) (left, right) =
+            binOpBoth left right (/)
+        static member inline (%) (left, right) =
+            binOpBoth left right (%)
 
 
 [<AutoOpen>]
@@ -74,71 +104,6 @@ module Helper =
                     | Some previousState -> previousState
                     | None -> seed
             l x r
-
-
-[<AutoOpen>]
-module Arithmetic =
-
-    open System.Runtime.CompilerServices
-    
-    let inline private binOpBoth left right f =
-        loopBase {
-            let! l = left
-            let! r = right
-            return f l r
-        }
-    let inline private binOpLeft left right f =
-        loopBase {
-            let! l = left
-            return f l right
-        }
-    let inline private binOpRight left right f =
-        loopBase {
-            let! r = right
-            return f left r
-        }
-
-    [<Extension>]
-    type LExtensions() =
-
-        [<Extension>]
-        static member inline (+++) (left, right) =
-            binOpBoth left right (+)
-
-        [<Extension>]
-        static member inline (-) (left, right) =
-            binOpBoth left right (-)
-
-        [<Extension>]
-        static member inline (*) (left, right) =
-            binOpBoth left right (*)
-
-        [<Extension>]
-        static member inline (/) (left, right) =
-            binOpBoth left right (/)
-
-        [<Extension>]
-        static member inline (%) (left, right) =
-            binOpBoth left right (%)
-    let inline (.+.) left right = binOpBoth left right (+)
-    let inline (.+) left right = binOpLeft left right (+)
-    let inline (+.) left right = binOpRight left right (+)
-
-    let inline (.-.) left right = binOpBoth left right (-)
-    let inline (.-) left right = binOpLeft left right (-)
-    let inline (-.) left right = binOpRight left right (-)
-
-    let inline (.*.) left right = binOpBoth left right (+)
-    let inline (.*) left right = binOpLeft left right (*)
-    let inline ( *.) left right = binOpRight left right (*)
-
-    let inline (./.) left right = binOpBoth left right (/)
-    let inline (./) left right = binOpLeft left right (/)
-    let inline (/.) left right = binOpRight left right (/)
-
-    let inline (.^.) left right = binOpBoth left right (fun l r -> System.Math.Pow(l, r))
-    let inline (.^) left right = binOpLeft left right (^^)
-    let inline (^.) left right = binOpRight left right (^^)
 
 
 [<AutoOpen>]
