@@ -35,8 +35,8 @@ loop {
 
 // modulate the frequence of a sawtooth wave with an LFO (low frequency oscillator)
 loop {
-    let! modulator = Osc.sin 5.0
     let amount = 0.05
+    let! modulator = Osc.sin 5.0
     let! s = Osc.saw (1000.0 * (1.0 - modulator * amount))
     return s
 }
@@ -54,6 +54,14 @@ loop {
 loop {
     let amount = !0.05
     let! s = !Osc.saw <**> (!1000.0 * (!1.0 - (Osc.sin 5.0) * amount))
+    return s
+}
+|> playSync 2.5<s>
+
+// Alternative: Inline the modulating oscillator (<*>) and using "looping" arithmetic operators
+loop {
+    let amount = 0.05
+    let! s = !Osc.saw <**> (1000.0 .* (1.0 .- (Osc.sin 5.0) *. amount))
     return s
 }
 |> playSync 2.5<s>
@@ -109,7 +117,7 @@ loop {
 
 // TODO: In Demo einarbeiten
 loop {
-    let! c = !counter <*> (!0.0) <**> (!1.0)
+    let! c = !counter <*> !0.0 <**> !1.0
     return c
 }
 |> Convert.iter 20 (printfn "%f")

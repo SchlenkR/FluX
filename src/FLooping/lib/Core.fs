@@ -90,6 +90,41 @@ module Core =
         static member inline (%) (left, right) =
             binOpBoth left right (%)
 
+    let inline private binOpLeft left right f =
+        loopBase {
+            let l = left
+            let! r = right
+            return f l r
+        }
+    let inline (.+) left right =
+        binOpLeft left right (+)
+    let inline (.-) left right =
+        binOpLeft left right (-)
+    let inline (.*) left right =
+        binOpLeft left right (*)
+    let inline (./) left right =
+        binOpLeft left right (/)
+    let inline (.%) left right =
+        binOpLeft left right (%)
+
+    let inline private binOpRight left right f =
+        loopBase {
+            let! l = left
+            let r = right
+            return f l r
+        }
+
+    let inline ( +.) left right =
+        binOpRight left right (+)
+    let inline ( -.) left right =
+        binOpRight left right (-)
+    let inline ( *.) left right =
+        binOpRight left right (*)
+    let inline ( /.) left right =
+        binOpRight left right (/)
+    let inline ( %.) left right =
+        binOpRight left right (%)
+
 
 [<AutoOpen>]
 module Helper =
