@@ -50,18 +50,10 @@ loop {
 }
 |> playSync 2.5<s>
 
-// Alternative: Inline the modulating oscillator (<*>) and using "looping" arithmetic operators
-loop {
-    let amount = !0.05
-    let! s = !Osc.saw <**> (!1000.0 * (!1.0 - (Osc.sin 5.0) * amount))
-    return s
-}
-|> playSync 2.5<s>
-
-// Alternative: Inline the modulating oscillator (<*>) and using "looping" arithmetic operators
+// Alternative: Inline the modulating oscillator (<*>) and using arithmetic operators
 loop {
     let amount = 0.05
-    let! s = !Osc.saw <**> (1000.0 .* (1.0 .- (Osc.sin 5.0) *. amount))
+    let! s = !Osc.saw <**> (1000.0 * (1.0 - (Osc.sin 5.0) * amount))
     return s
 }
 |> playSync 2.5<s>
@@ -95,7 +87,7 @@ loop {
 // noise with low pass filter
 // TODO: { Filter.lowPassDef with frq=frqS; } sieht scheiße aus
 loop {
-    let! frqS = Osc.sin 5.0 + !1.0 * !1500.0
+    let! frqS = (Osc.sin 5.0) + 1.0 * 1500.0
     let! f = !Filter.lowPass <*> Osc.noise() <**> !{ Filter.lowPassDef with frq=frqS; }
     return f
 }

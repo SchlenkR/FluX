@@ -71,49 +71,46 @@ module Core =
             return! result
         }
     
-    [<AutoOpen>]
-    module Arithmetic =
+    let inline private binOpBoth left right f =
+        loopBase {
+            let! l = left
+            let! r = right
+            return f l r
+        }
 
-        let inline private binOpBoth left right f =
-            loopBase {
-                let! l = left
-                let! r = right
-                return f l r
-            }
+    type L<'v,'s,'r> with
+        static member inline (+) (left, right) = binOpBoth left right (+)
+        static member inline (-) (left, right) = binOpBoth left right (-)
+        static member inline (*) (left, right) = binOpBoth left right (*)
+        static member inline (/) (left, right) = binOpBoth left right (/)
+        static member inline (%) (left, right) = binOpBoth left right (%)
 
-        type L<'v,'s,'r> with
-            static member inline (+) (left, right) = binOpBoth left right (+)
-            static member inline (-) (left, right) = binOpBoth left right (-)
-            static member inline (*) (left, right) = binOpBoth left right (*)
-            static member inline (/) (left, right) = binOpBoth left right (/)
-            static member inline (%) (left, right) = binOpBoth left right (%)
+    let inline private binOpLeft left right f =
+        loopBase {
+            let l = left
+            let! r = right
+            return f l r
+        }
 
-        let inline private binOpLeft left right f =
-            loopBase {
-                let l = left
-                let! r = right
-                return f l r
-            }
+    type L<'v,'s,'r> with
+        static member inline (+) (left, right) = binOpLeft left right (+)
+        static member inline (-) (left, right) = binOpLeft left right (-)
+        static member inline (*) (left, right) = binOpLeft left right (*)
+        static member inline (/) (left, right) = binOpLeft left right (/)
+        static member inline (%) (left, right) = binOpLeft left right (%)
 
-        type L<'v,'s,'r> with
-            static member inline (+) (left, right) = binOpLeft left right (+)
-            static member inline (-) (left, right) = binOpLeft left right (-)
-            static member inline (*) (left, right) = binOpLeft left right (*)
-            static member inline (/) (left, right) = binOpLeft left right (/)
-            static member inline (%) (left, right) = binOpLeft left right (%)
+    let inline private binOpRight left right f =
+        loopBase {
+            let! l = left
+            let r = right
+            return f l r
+        }
 
-        let inline private binOpRight left right f =
-            loopBase {
-                let! l = left
-                let r = right
-                return f l r
-            }
-
-        type L<'v,'s,'r> with
-            static member inline (+) (left, right) = binOpRight left right (+)
-            static member inline (-) (left, right) = binOpRight left right (-)
-            static member inline (*) (left, right) = binOpRight left right (*)
-            static member inline (/) (left, right) = binOpRight left right (/)
+    type L<'v,'s,'r> with
+        static member inline (+) (left, right) = binOpRight left right (+)
+        static member inline (-) (left, right) = binOpRight left right (-)
+        static member inline (*) (left, right) = binOpRight left right (*)
+        static member inline (/) (left, right) = binOpRight left right (/)
 
 
 [<AutoOpen>]
