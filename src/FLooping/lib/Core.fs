@@ -96,16 +96,17 @@ module Core =
             let! r = right
             return f l r
         }
-    let inline (.+) left right =
-        binOpLeft left right (+)
-    let inline (.-) left right =
-        binOpLeft left right (-)
-    let inline (.*) left right =
-        binOpLeft left right (*)
-    let inline (./) left right =
-        binOpLeft left right (/)
-    let inline (.%) left right =
-        binOpLeft left right (%)
+
+    // let inline (.+) left right =
+    //     binOpLeft left right (+)
+    // let inline (.-) left right =
+    //     binOpLeft left right (-)
+    // let inline (.*) left right =
+    //     binOpLeft left right (*)
+    // let inline (./) left right =
+    //     binOpLeft left right (/)
+    // let inline (.%) left right =
+    //     binOpLeft left right (%)
 
     let inline private binOpRight left right f =
         loopBase {
@@ -114,16 +115,31 @@ module Core =
             return f l r
         }
 
-    let inline ( +.) left right =
-        binOpRight left right (+)
-    let inline ( -.) left right =
-        binOpRight left right (-)
-    let inline ( *.) left right =
-        binOpRight left right (*)
-    let inline ( /.) left right =
-        binOpRight left right (/)
-    let inline ( %.) left right =
-        binOpRight left right (%)
+    // let inline ( +.) left right =
+    //     binOpRight left right (+)
+    // let inline ( -.) left right =
+    //     binOpRight left right (-)
+    // let inline ( *.) left right =
+    //     binOpRight left right (*)
+    // let inline ( /.) left right =
+    //     binOpRight left right (/)
+    // let inline ( %.) left right =
+    //     binOpRight left right (%)
+
+
+    type Addable = Addable with
+        static member (+) (Addable, x:L<float,_,_>) = fun y ->
+            loopBase {
+                let! x' = x
+                return x' + y
+            }
+        static member (+) (Addable, x:float) = fun (y:L<float,_,_>) ->
+            loopBase {
+                let! y' = y
+                return x + y'
+            }
+
+    let inline (+) a b = (+) Addable a b
 
 
 [<AutoOpen>]
