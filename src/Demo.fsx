@@ -87,14 +87,11 @@ loop {
 // noise with low pass filter
 // TODO: { Filter.lowPassDef with frq=frqS; } sieht scheiße aus
 loop {
-    let! frqS = (Osc.sin 5.0) + 1.0 * 1500.0
+    let! frqS = Osc.sin 5.0 + 1.0 * 1500.0
     let! f = !Filter.lowPass <*> Osc.noise() <**> !{ Filter.lowPassDef with frq=frqS; }
     return f
 }
 |> playSync 3.0<s>
-
-
-
 
 
 // TODO: doc
@@ -106,10 +103,3 @@ loop {
 |> Convert.iter 20 (printfn "%A")
 
 // TODO: verschachtelte Loops / Auslagern in wiederverwendbare Einheiten
-
-// TODO: In Demo einarbeiten
-loop {
-    let! c = !counter <*> !0.0 <**> !1.0
-    return c
-}
-|> Convert.iter 20 (printfn "%f")
