@@ -52,7 +52,8 @@ module Core =
             let mappedRes = f res.value
             { value=mappedRes; state=res.state }
         L f1
-    /// TODO: Docu
+
+    /// map operator
     let (<!>) = map
 
     /// TODO: Docu (applicative)
