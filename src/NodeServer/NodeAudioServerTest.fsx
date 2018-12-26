@@ -2,7 +2,7 @@
 // nuget: Suave
 
 #r "../FLooping/bin/Debug/netcoreapp2.0/FLooping.dll"
-#r "./packages/Suave.2.5.3/lib/netstandard2.0/Suave.dll"
+#r "../../packages/Suave/lib/netstandard2.0/Suave.dll"
 
 open System
 open System.IO

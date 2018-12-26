@@ -1,6 +1,7 @@
 source https://www.nuget.org/api/v2
-nuget CSCore
-nuget FSharp.Core
+nuget CSCore >= 1.2.0
+nuget FSharp.Core >= 4.3.0
+nuget Suave >= 2.5.0
 
 group Build
 source https://www.nuget.org/api/v2
