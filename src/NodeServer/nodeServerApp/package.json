@@ -1,0 +1,17 @@
+{
+  "name": "nodejsaudio",
+  "version": "1.0.0",
+  "description": "",
+  "main": "test.js",
+  "dependencies": {
+    "audio-generator": "^2.1.2",
+    "audio-speaker": "^1.5.0",
+    "node-fetch": "^2.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
