@@ -13,17 +13,31 @@ module Core =
     [<Struct>]
     type S<'a,'b> = { mine:'a; other:'b }
 
+    // TODO: irgendwie klarer als das unten.
     let bind (m:L<'a,'sa,'r>) (f:'a -> L<'b,'sb,'r>) : L<'b, S<'sa,'sb>, 'r> =
         let stateFunc localState readerState =
-            let { mine=prevAState; other=prevBState } = 
+            let initialMatch = 
                 match localState with
                 | None   -> {mine=None; other=None}
                 | Some v -> {mine=Some v.mine; other=Some v.other}
-            let a = run m prevAState readerState
+            let prevAState = initialMatch.mine
+            let prevBState = initialMatch.other
+            let a = (run m) prevAState readerState
             let fRes = f a.value
-            let b = run fRes prevBState readerState
+            let b = (run fRes) prevBState readerState
             { value = b.value; state = {mine=a.state; other=b.state} }
         L stateFunc
+    // let bind (m:L<'a,'sa,'r>) (f:'a -> L<'b,'sb,'r>) : L<'b, S<'sa,'sb>, 'r> =
+    //     let stateFunc localState readerState =
+    //         let { mine=prevAState; other=prevBState } = 
+    //             match localState with
+    //             | None   -> {mine=None; other=None}
+    //             | Some v -> {mine=Some v.mine; other=Some v.other}
+    //         let a = run m prevAState readerState
+    //         let fRes = f a.value
+    //         let b = run fRes prevBState readerState
+    //         { value = b.value; state = {mine=a.state; other=b.state} }
+    //     L stateFunc
     
     let ret x = L (fun _ _ -> {value=x; state=()})
     let (!) = ret
@@ -71,6 +85,30 @@ module Core =
             let result = innerF resL
             return! result
         }
+
+    // TODO: Use this
+    (*
+    type ArithmeticExt = ArithmeticExt with
+    static member inline (?<-) (ArithmeticExt, a: Block<'v,'s>, b) =
+        block {
+            let! aValue = a
+            return aValue + b
+        }
+    static member inline (?<-) (ArithmeticExt, a, b: Block<'v,'s>) =
+        block {
+            let! bValue = b
+            return a + bValue
+        }
+    static member inline (?<-) (ArithmeticExt, a: Block<'v1,'s1>, b: Block<'v2,'s2>) =
+        block {
+            let! aValue = a
+            let! bValue = b
+            return aValue + bValue
+        }
+    static member inline (?<-) (ArithmeticExt, a, b) = a + b
+
+    let inline (+) a b = (?<-) ArithmeticExt a b
+    *)
     
     let inline private binOpBoth left right f =
         loopBase {

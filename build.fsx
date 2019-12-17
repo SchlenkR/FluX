@@ -5,6 +5,7 @@
 #r "./packages/build/FAKE/tools/FakeLib.dll"
 
 open Fake
+open Fake.IO.Globbing.Operators
 open System
 
 // --------------------------------------------------------------------------------------
