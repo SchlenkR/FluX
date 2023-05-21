@@ -1,3 +1,7 @@
+# FORKING / Status
+
+FluX is discontinued. Before starting to work with this library or thinking about forking it, please have a look at [LocSta](https://github.com/fsprojects/LocSta), which is kind-of successor for FluX.
+
 # Synopsis
 
 [![Join the chat at https://gitter.im/FLooping/Lobby](https://badges.gitter.im/FLooping/Lobby.svg)](https://gitter.im/FLooping/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
