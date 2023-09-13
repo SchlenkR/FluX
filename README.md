@@ -1,6 +1,6 @@
 # FORKING / Status
 
-FluX is discontinued. Before starting to work with this library or thinking about forking it, please have a look at [LocSta](https://github.com/fsprojects/LocSta), which is kind-of successor for FluX.
+FluX is discontinued. Before starting to work with this library or thinking about forking it, please have a look at [Vide](https://github.com/RonaldSchlenker/Vide) or [LocSta](https://github.com/fsprojects/LocSta), which is kind-of successor for FluX.
 
 # Synopsis
 
